@@ -10,20 +10,7 @@ interface Error {
   providedIn: 'root'
 })
 export class ErrorService {
-  errors = [
-    {
-      title: "Danger",
-      message: "Boop"
-    },
-    {
-      title: "Danger",
-      message: "Beep"
-    },
-    {
-      title: "Danger",
-      message: "Blip"
-    },
-  ];
+  errors = [];
 
   constructor() { }
 
