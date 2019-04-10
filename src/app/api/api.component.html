@@ -1,0 +1,114 @@
+<div class="content" style="height:100%">
+  <div class="container">
+    <div class="section">
+      <a class="btn btn--primary" (click)="openModal()">Add API</a>
+      <br>
+      <br>
+      <div class="alert alert--warning" style="margin: 15px 0;" *ngIf="showMessage">
+        <div class="alert__icon icon-warning-outline"></div>
+        <div class="alert__message">
+          <h4>{{ messageTitle }}</h4>
+          <div>{{ messageText }}</div>
+        </div>
+      </div>
+      <div class="panel panel--bordered panel--bordered">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Device</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>URI</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let api of apis">
+              <td>{{ api.name }}</td>
+              <td>{{ api.apiCall.name  }}</td>
+              <td>{{ api.apiCall.method }}</td>
+              <td>{{ api.apiCall.path }}</td>
+              <td style="text-align: right">
+                <button class="btn btn--negative btn--icon btn--small"
+                  (click)="deleteDeviceApi(account.name, account.api.name)">
+                  <span class="icon icon-delete"></span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal modal--large" id="modal-large" *ngIf="newApi == true">
+  <form [formGroup]="newApiForm" (ngSubmit)="onSubmit()">
+    <div class="modal__dialog">
+      <div class="modal__content">
+        <a class="modal__close" (click)="closeModal()"><span class="icon-close"></span></a>
+        <div class="modal__header">
+          <h1 class="modal__title">New API</h1>
+        </div>
+        <div class="modal__body">
+          <div class="panel">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <div class="form-group__text">
+                    <input type="text" formControlName="name">
+                    <label for="input-layout-default">Name</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <div class="form-group__text select">
+                    <select formControlName="deviceAccount">
+                      <option *ngFor="let account of accounts" [value]="account">{{ account }}</option>
+                    </select>
+                    <label for="select-size-default">Device</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <div class="form-group__text select">
+                    <select formControlName="type">
+                      <option *ngFor="let typeOption of typeList" [value]="typeOption">{{ typeOption }}</option>
+                    </select>
+                    <label for="select-size-default">Type</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <div class="form-group__text select">
+                    <select formControlName="method">
+                      <option *ngFor="let methodOption of methodList" [value]="methodOption">{{ methodOption }}</option>
+                    </select>
+                    <label for="select-size-default">Method</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-8">
+                <div class="form-group">
+                  <div class="form-group__text">
+                    <input type="text" formControlName="path">
+                    <label for="input-uri">API Endpoint</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal__footer">
+          <button type="submit" [disabled]="!newApiForm.valid" class="btn btn--success">Submit</button>
+          <button type="button" class="btn btn-negative" (click)="closeModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

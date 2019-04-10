@@ -1,21 +1,78 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-</div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/cli">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+<div class="content-wrapper">
 
-<router-outlet></router-outlet>
+  <header class="header header--tall">
+    <div class="header-bar container">
+      <a href="javascript:;" class="header-bar__logo">
+        <span class="icon-cisco"></span>
+      </a>
+      <div class="header-bar__main">
+        <div class="header-heading">
+          <h1 class="page-title">Cisco API Normalization Engine</h1>
+        </div>
+        <div class="header-menus">
+          <ul class="nav nav-tabs">
+            <li class="tab">
+              <a tabindex="1" routerLink="/home" routerLinkActive="active">
+                <div class="tab__heading" title="home">Home</div>
+              </a>
+            </li>
+            <li class="tab">
+              <a tabindex="2" routerLink="/account" routerLinkActive="active">
+                <div class="tab__heading" title="accountss">Accounts</div>
+              </a>
+            </li>
+            <li class="tab" routerLink="/api" routerLinkActive="active">
+              <a tabindex="3">
+                <div class="tab__heading" title="apis">API's</div>
+              </a>
+            </li>
+            <li class="tab" routerLink="/workflow" routerLinkActive="active">
+              <a tabindex="4">
+                <div class="tab__heading" title="workflows">Workflows</div>
+              </a>
+            </li>
+            <li class="tab" routerLink="/job" routerLinkActive="active">
+              <a tabindex="5">
+                <div class="tab__heading" title="jobs">Jobs</div>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="header-toolbar">
+        <div class="dropdown dropdown--left" [ngClass]="{'active': menuOpen}">
+            <button type="button" class="btn btn--small" (click)="toggleMenu()">{{ user }}</button>
+            <div class="dropdown__menu">
+              <a>Profile</a>
+              <div class="dropdown__divider"></div>
+              <a>Logout</a>
+            </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="content" style="height:100%">
+    <router-outlet></router-outlet>
+  </div>
+
+  <footer class="footer footer--basic footer--compressed" style="position: relative">
+    <div class="footer__links">
+      <ul class="list">
+        <li><a href="http://www.cisco.com/cisco/web/siteassets/contacts/index.html" target="_blank">Contacts</a></li>
+        <li><a href="https://secure.opinionlab.com/ccc01/o.asp?id=jBjOhqOJ" target="_blank">Feedback</a></li>
+        <li><a href="https://www.cisco.com/c/en/us/about/help.html" target="_blank">Help</a></li>
+        <li><a href="http://www.cisco.com/c/en/us/about/sitemap.html" target="_blank">Site Map</a></li>
+        <li><a href="https://www.cisco.com/c/en/us/about/legal/terms-conditions.html" target="_blank">Terms &
+            Conditions</a></li>
+        <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html" target="_blank">Privacy Statement</a>
+        </li>
+        <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html#cookies" target="_blank">Cookie
+            Policy</a></li>
+        <li><a href="https://www.cisco.com/c/en/us/about/legal/trademarks.html" target="_blank">Trademarks</a></li>
+      </ul>
+    </div>
+  </footer>
+
+</div>
+<app-error></app-error>

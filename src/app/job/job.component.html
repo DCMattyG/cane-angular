@@ -1,0 +1,22 @@
+<div class="content" style="height:100%">
+  <div class="container">
+    <div class="panel panel--bordered panel--bordered" style="margin-top: 20px">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Claim ID</th>
+            <th>Start Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let claim of jobs">
+            <td>{{ claim.claimCode }}</td>
+            <td>{{ claim.timestamp }}</td>
+            <td>{{ claim.currentStatus }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

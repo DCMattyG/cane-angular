@@ -1,0 +1,202 @@
+<div class="content" style="height:100%">
+  <div class="container">
+    <div class="section">
+      <button type="button" class="btn btn--primary" (click)="openModal()">Add Account</button>
+      <br><br>
+      <div class="panel panel--bordered panel--bordered">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>URL</th>
+              <th>Status</th>
+              <th>Proxy Required</th>
+              <th>Passthrough Endpoint</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let account of accounts">
+              <td>
+                <a (click)="openDeviceModal(account.name)">{{ account.name }}</a>
+              </td>
+              <td>{{ account.authType }}</td>
+              <td>{{ account.baseURL }}</td>
+              <td>
+                <span *ngIf="account.status == 0" class="icon-remove-outline icon-medium text-muted"></span>
+                <span *ngIf="account.status == 1" class="icon-check-outline icon-medium text-success"></span>
+                <span *ngIf="account.status == 2" class="icon-warning-outline icon-medium text-warning"></span>
+              </td>
+              <td>
+                <span *ngIf="account.requireProxy == true">Yes</span>
+                <span *ngIf="account.requireProxy == false">No</span>
+              </td>
+              <td>{{ account.endpoint }}</td>
+              <td style="text-align: right">
+                <button (click)="deleteAccount(account.name)" class="btn btn--small btn--icon btn--negative">
+                  <span class="icon icon-trash"></span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal modal--small" id="modal-small" *ngIf="newAccount == true">
+  <div class="modal__dialog">
+    <div class="modal__content">
+      <form [formGroup]="accountForm" (ngSubmit)="onSubmit()" autocomplete="off">
+        <a class="modal__close" (click)="closeModal()"><span class="icon-close"></span></a>
+        <div class="modal__header">
+          <h1 class="modal__title">New Account</h1>
+        </div>
+        <div class="modal__body">
+
+            <div class="form-group half-margin-bottom">
+              <div class="form-group__text">
+                <input id="input-name" type="text" value="" formControlName="name">
+                <label for="input-name">Name</label>
+              </div>
+            </div>
+            <div class="form-group half-margin-bottom">
+              <div class="form-group__text">
+                <input id="input-uri" type="text" formControlName="baseURL">
+                <label for="input-uri">URI</label>
+              </div>
+            </div>
+            <label class="checkbox">
+              <input type="checkbox" formControlName="requireProxy">
+              <span class="checkbox__input"></span>
+              <span class="checkbox__label hidden-xs">Require Proxy</span>
+            </label>
+
+            <div class="form-group">
+              <div class="form-group__text select">
+                <select id="" formControlName="authType" (change)="onAuthChange($event.target.value)">
+                  <option value="none" selected>No Authentication</option>
+                  <option value="basic">Basic </option>
+                  <option value="session">Session </option>
+                  <option value="apikey">APIKey </option>
+                  <option value="rfc3447">RFC 3447 </option>
+                </select>
+                <label for="select-size-default">Type</label>
+              </div>
+            </div>
+            <br>
+
+          <div formGroupName="authObj">
+            <div *ngIf="accountForm.value.authType == 'rfc3447'">
+              <div class="form-group half-margin-bottom">
+                <div class="form-group__text">
+                  <input id="input-type-pubkey" type="text" formControlName="publicKey">
+                  <label for="input-type-pubkey">Public Key</label>
+                </div>
+              </div>
+              <div class="form-group half-margin-bottom">
+                <div class="form-group__text">
+                  <textarea id="input-type-privkey" type="text" rows="6" formControlName="privateKey"></textarea>
+                  <label for="input-type-privkey">Private Key</label>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="accountForm.value.authType == 'apikey'">
+              <div class="form-group half-margin-bottom">
+                <div class="form-group__text">
+                  <input id="input-type-header" type="text" value="" formControlName="header">
+                  <label for="input-type-header">Header</label>
+                </div>
+              </div>
+              <div class="form-group half-margin-bottom">
+                <div class="form-group__text">
+                  <input id="input-key" type="text" value="" formControlName="key">
+                  <label for="input-key">Key</label>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="accountForm.value.authType == 'session'">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group half-margin-bottom">
+                    <div class="form-group__text">
+                      <input id="input-type-sessionusername" type="text" value="" formControlName="session_username">
+                      <label for="input-type-sessionusername">Username</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group half-margin-bottom">
+                    <div class="form-group__text">
+                      <input id="input-type-sessionusernamemap" type="text" value=""
+                        formControlName="session_usernameMap">
+                      <label for="input-type-sessionusernamemap">Maps To</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group half-margin-bottom">
+                    <div class="form-group__text">
+                      <input id="input-type-sessionpassword" type="text" value="" formControlName="session_password">
+                      <label for="input-type-sessionpassword">Password</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group half-margin-bottom">
+                    <div class="form-group__text">
+                      <input id="input-type-sessionpasswordmap" type="text" value=""
+                        formControlName="session_passwordMap">
+                      <label for="input-type-sessionpasswordmap">Maps To</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group half-margin-bottom">
+                <div class="form-group__text">
+                  <textarea id="input-type-authbody" type="text" rows="6" formControlName="authBody"></textarea>
+                  <label for="input-type-authbody">Auth Body</label>
+                </div>
+                <button ng-click="parseResponse()" class="btn btn--secondary btn--small btn--icon"><span
+                    class="icon-animation icon--small"></span></button>
+              </div>
+              <div class="form-group half-margin-bottom">
+                <div class="form-group__text">
+                  <input id="input-type-lifetime" type="text" value="" formControlName="cookieLifetime">
+                  <label for="input-type-lifetime">Cookie Lifetime</label>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="accountForm.value.authType == 'basic'">
+              <div class="form-group half-margin-bottom">
+                <div class="form-group__text">
+                  <input type="text" value="" formControlName="username">
+                  <label for="input-username">Username</label>
+                </div>
+              </div>
+              <div class="form-group half-margin-bottom">
+                <div class="form-group__text">
+                  <input type="password" value="" formControlName="password">
+                  <label for="input-basicpassword">Password</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal__footer">
+          <button type="submit" [disabled]="!accountForm.valid" class="btn btn--success">Submit</button>
+          <button type="reset" class="btn" (click)="closeModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

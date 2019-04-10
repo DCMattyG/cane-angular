@@ -1,0 +1,309 @@
+<div class="container">
+  <form [formGroup]="workflowEditor" novalidate (ngSubmit)="onSubmit()">
+    <div class="editor-header">
+      <div style="margin-right: auto">
+        <p class="editor-title">Workflow: "DeployBranch"</p>
+      </div>
+      <div style="margin-left: auto">
+        <button type="button" class="btn btn--icon btn--small btn--secondary" [routerLink]="['/workflow']">
+          <span class="icon-close"></span>
+        </button>
+        <button type="submit" class="btn btn--icon btn--small btn--success" [disabled]="!workflowEditor.valid">
+            <span class="icon-save"></span>
+        </button>
+        <span class="icon-export icon-medium step-up" (click)="moveStep('up')"></span>
+        <span class="icon-import icon-medium step-down" (click)="moveStep('down')"></span>
+        <button type="button" class="btn btn--icon btn--small btn--primary" (click)="openModal()">
+            <span class="icon-add"></span>
+        </button>
+        <button type="button" class="btn btn--icon btn--small btn--negative" (click)="remStep()">
+            <span class="icon-remove"></span>
+        </button>
+      </div>
+    </div>
+    <div class="editor-container">
+      <ng-container formArrayName="steps">
+        <ng-container *ngFor="let step of workflowEditor.controls.steps.controls; let i=index">
+          <ng-container [formGroupName]="i">
+            <div class="container editor-outer">
+              <div class="container editor-inner">
+                <div class="row h-100 editor-top" (click)="toggleEditor($event, i)" [ngClass]="{'active-editor': stateTracker.openEditor === i}">
+                  <div class="col-auto align-self-center text-center">
+                    <label class="checkbox" style="vertical-align: middle; padding-left: 5px;">
+                      <input type="checkbox" formControlName="selected">
+                      <span class="checkbox__input"></span>
+                    </label>
+                  </div>
+                  <div class="col align-self-center text-left font-weight-bold">
+                    <div class="text-info"><strong>{{(i+1)}}.
+                        {{workflowEditor.controls.steps.controls[i].controls.stepTitle.value}}</strong></div>
+                    <div>
+                      <span class="http-verb">
+                        <strong>{{workflowEditor.controls.steps.controls[i].controls.stepVerb.value}}</strong>
+                      </span>
+                      <span> {{workflowEditor.controls.steps.controls[i].controls.stepAPI.value}}</span>
+                    </div>
+                  </div>
+                  <div class="col-auto align-self-center text-center">
+                    <span class="icon-chevron-down icon-small" style="padding-right: 5px;" [ngClass]="stateTracker.openEditor == i ? 'icon-chevron-down' : 'icon-chevron-up'"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="container editor-inner">
+                <div class="row h-100 editor-bottom" [@openClose]="stateTracker.openEditor == i ? 'opened' : 'closed'">
+                  <div class="col-12" style="margin: 10px 0px 10px 0px;">
+                    <ul id="workflow-step-tabs" class="tabs tabs--bordered">
+                      <li id="request-tab" class="tab" (click)="setEditorTab(i, 'req')" [ngClass]="{'active' : stateTracker.steps[i].currentTab == 'req'}">
+                        <a tabindex="0">
+                          <div class="tab__heading">Request</div>
+                        </a>
+                      </li>
+                      <li id="response-tab" class="tab" (click)="setEditorTab(i, 'resp')" [ngClass]="{'active' : stateTracker.steps[i].currentTab == 'resp'}">
+                        <a tabindex="0">
+                          <div class="tab__heading">Response Validator</div>
+                        </a>
+                      </li>
+                      <li id="extractor-tab" class="tab" (click)="setEditorTab(i, 'extract')" [ngClass]="{'active' : stateTracker.steps[i].currentTab == 'extract'}">
+                        <a tabindex="0">
+                          <div class="tab__heading">Variable Extractor</div>
+                        </a>
+                      </li>
+                    </ul>
+                    <div id="request-content" class="tab-content tab-content-border" [ngClass]="{'hide' : stateTracker.steps[i].currentTab != 'req'}">
+                      <div class="editor-button-group">
+                        <div id="request-button-group" class="btn-group editor-button-primary">
+                          <button type="button" class="btn btn--small btn--primary-ghost" (click)="setRequestWindow(i, 'param')" [ngClass]="{'selected' : stateTracker.steps[i].requestWindow == 'param'}">Parameters</button>
+                          <button type="button" class="btn btn--small btn--primary-ghost" [disabled]="!isValid(i, 'params')" (click)="setRequestWindow(i, 'raw'); paramToRAW(i);" [ngClass]="{'selected' : stateTracker.steps[i].requestWindow == 'raw'}">RAW Body</button>
+                          <button type="button" class="btn btn--small btn--primary-ghost" (click)="setRequestWindow(i, 'head')" [ngClass]="{'selected' : stateTracker.steps[i].requestWindow == 'head'}">Headers</button>
+                        </div>
+                        <div class="editor-button-raw" [ngClass]="{'hide' : stateTracker.steps[i].requestWindow != 'raw'}">
+                          <button type="button" class="btn btn--icon btn--small btn--secondary editor-button-action" (click)="editorUndo(i)"><span class="icon-redial"></span></button>
+                          <button type="button" class="btn btn--icon btn--small btn--secondary editor-button-action" (click)="editorRedo(i)"><span class="icon-refresh"></span></button>
+                          <button type="button" class="btn btn--icon btn--small btn--success editor-button-action" (click)="updateRequest(i)" [ngClass]="{'disabled' : editorErrors(i) != 0}">
+                            <span class="icon-check"></span>
+                          </button>
+                        </div>
+                      </div>
+                      <div id="request-content-param" class="tab-pane" [ngClass]="{'active' : stateTracker.steps[i].requestWindow == 'param'}">
+                        <div class="responsive-table editor-table" style="height: 240px; overflow-y: scroll;">
+                          <table class="table table--nostripes table--highlight table--bordered table--compressed" style="border-right: none; border-left: none;">
+                            <thead>
+                              <tr>
+                                <th width="3%">
+                                  <label class="checkbox">
+                                    <input type="checkbox" (click)="checkUncheck($event.target, i, 'params')" />
+                                    <span class="checkbox__input"></span>
+                                  </label>
+                                </th>
+                                <th width="15%">Name</th>
+                                <th width="55%">Value</th>
+                                <th width="10%">Param Type</th>
+                                <th width="10%">Field Type</th>
+                                <th width="7%" class="add-remove"><a (click)="addParam(i)">+</a><a (click)="removeParam(i)">-</a></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <ng-container formArrayName="params">
+                                <tr *ngFor="let param of step.controls.params.controls; let j=index">
+                                  <ng-container [formGroupName]="j">
+                                    <td>
+                                      <label class="checkbox">
+                                        <input type="checkbox" formControlName="selected" />
+                                        <span class="checkbox__input"></span>
+                                      </label>
+                                    </td>
+                                    <td>
+                                      <input type="text" spellcheck="false" formControlName="name" />
+                                    </td>
+                                    <td>
+                                      <input type="text" spellcheck="false" formControlName="value" />
+                                    </td>
+                                    <td spellcheck="false">
+                                      <select formControlName="paramType">
+                                        <option selected disabled hidden style='display: none' value=''></option>
+                                        <option value="body">body</option>
+                                        <option value="query">query</option>
+                                      </select>
+                                    </td>
+                                    <td spellcheck="false">
+                                      <select formControlName="fieldType">
+                                        <option selected disabled hidden style='display: none' value=''></option>
+                                        <option value="string">string</option>
+                                        <option value="number">number</option>
+                                        <option value="boolean">boolean</option>
+                                      </select>
+                                    </td>
+                                    <td></td>
+                                  </ng-container>
+                                </tr>
+                              </ng-container>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                      <div id="request-content-raw" class="tab-pane" [ngClass]="{'active' : stateTracker.steps[i].requestWindow == 'raw'}">
+                        <div class="editor-ide">
+                          <app-code-editor #requestEditor [id]="i"></app-code-editor>
+                        </div>
+                      </div>
+                      <div id="request-content-header" class="tab-pane" [ngClass]="{'active' : stateTracker.steps[i].requestWindow == 'head'}">
+                        <div class="responsive-table editor-table" style="height: 240px; overflow-y: scroll;">
+                          <table class="table table--nostripes table--highlight table--bordered table--compressed" style="border-right: none; border-left: none;">
+                            <thead>
+                              <tr>
+                                <th width="5%">
+                                  <label class="checkbox">
+                                    <input type="checkbox" (click)="checkUncheck($event.target, i, 'headers')" />
+                                    <span class="checkbox__input"></span>
+                                  </label>
+                                </th>
+                                <th width="20%" class="sortable">Header Name</th>
+                                <th width="70%" class="no-right-border">Header Value</th>
+                                <th width="5%" class="add-remove"><a (click)="addHeader(i)">+</a><a (click)="removeHeader(i)">-</a></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <ng-container formArrayName="headers">
+                                <tr *ngFor="let header of step.controls.headers.controls; let k=index">
+                                  <ng-container [formGroupName]="k">
+                                    <td width="5%" class="no-right-border">
+                                      <label class="checkbox">
+                                        <input type="checkbox" formControlName="selected" />
+                                        <span class="checkbox__input"></span>
+                                      </label>
+                                    </td>
+                                    <td width="20%">
+                                      <input type="text" spellcheck="false" formControlName="name" />
+                                    </td>
+                                    <td width="70%" colspan="2">
+                                      <input type="text" spellcheck="false" formControlName="value" />
+                                    </td>
+                                  </ng-container>
+                                </tr>
+                              </ng-container>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div id="response-content" class="tab-content tab-content-border" [ngClass]="{'hide' : stateTracker.steps[i].currentTab != 'resp'}">
+                      <div id="response-button-group" class="editor-button">
+                        <div class="editor-button-group">
+                          <div class="editor-button-primary">
+                            <button type="button" class="btn btn--small btn--primary"
+                              (click)="executeRequest()">Execute</button>
+                          </div>
+                        </div>
+                      </div>
+                      <div id="reponse-content-body" class="tab-pane" [ngClass]="{'active' : stateTracker.steps[i].currentTab == 'resp'}">
+                        <div class="editor-ide">
+                          <app-code-editor #responseEditor [id]="i"></app-code-editor>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div id="extractor-content" class="tab-content tab-content-border" style="padding-top: 10px;" [ngClass]="{'hide' : stateTracker.steps[i].currentTab != 'extract'}">
+                      <div id="extractor-content-header" class="tab-pane" [ngClass]="{'active' : stateTracker.steps[i].currentTab == 'extract'}">
+                        <div class="responsive-table editor-table" style="height: 240px; overflow-y: scroll;">
+                          <table class="table table--nostripes table--highlight table--bordered table--compressed" style="border-right: none; border-left: none;">
+                            <thead>
+                              <tr>
+                                <th width="5%">
+                                  <label class="checkbox">
+                                    <input type="checkbox" (click)="checkUncheck($event.target, i, 'variables')" />
+                                    <span class="checkbox__input"></span>
+                                  </label>
+                                </th>
+                                <th width="20%" class="sortable">Name</th>
+                                <th width="70%" class="no-right-border">JSON Path / XML Path / Utility Function</th>
+                                <th width="5%" class="add-remove"><a (click)="addVariable(i)">+</a><a (click)="removeVariable(i)">-</a></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <ng-container formArrayName="variables">
+                                <tr *ngFor="let variable of step.controls.variables.controls; let l=index">
+                                  <ng-container [formGroupName]="l">
+                                    <td class="no-right-border">
+                                      <label class="checkbox">
+                                        <input type="checkbox" formControlName="selected" />
+                                        <span class="checkbox__input"></span>
+                                      </label>
+                                    </td>
+                                    <td>
+                                      <input type="text" spellcheck="false" formControlName="name" />
+                                    </td>
+                                    <td colspan="2">
+                                      <input style="width: 100%;" type="text" spellcheck="false" formControlName="value" />
+                                    </td>
+                                  </ng-container>
+                                </tr>
+                              </ng-container>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </div>
+    <div style="height: 50px;">
+    </div>
+  </form>
+</div>
+
+<div class="modal modal--small" id="modal-small" [ngClass]="{'hide': !newEditor}">
+  <form [formGroup]="newWorkflowStep" novalidate (ngSubmit)="addStep()">
+  <div class="modal__dialog">
+    <div class="modal__content">
+      <a class="modal__close" (click)="closeModal()"><span class="icon-close"></span></a>
+      <div class="modal__header">
+        <h3 class="modal__title">Add New Step</h3>
+      </div>
+      <div class="modal__body">
+        <div style="width: 50%; margin: auto; box-sizing: border-box; align-content: center;">
+          <table>
+            <tr>
+              <td style="text-align: right;">
+                <p class="subtitle">Title: </p>
+              </td>
+              <td>
+                <input type="text" formControlName="stepTitle" style="border-bottom: 1px solid #dfdfdf;" />
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align: right;">
+                <p class="subtitle">Account: </p>
+              </td>
+              <td>
+                <select formControlName="stepAccount" style="border-bottom: 1px solid #dfdfdf;">
+                  <option *ngFor="let account of getAccounts()" [value]="account">{{account}}</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align: right;">
+                <p class="subtitle">API: </p>
+              </td>
+              <td>
+                <select formControlName="stepAPI" style="border-bottom: 1px solid #dfdfdf;">
+                  <option *ngFor="let api of getApis(newWorkflowStep.get('stepAccount').value)" [value]="api">{{api}}
+                  </option>
+                </select>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn" type="submit" [disabled]="!newWorkflowStep.valid">Add</button>
+      </div>
+    </div>
+  </div>
+  </form>
+</div>

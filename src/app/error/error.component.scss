@@ -1,0 +1,15 @@
+.error-stack {
+  visibility: visible;
+  min-width: 250px;
+  text-align: center;
+  border-radius: 2px;
+  padding: 16px 3px 14px 0px;
+  position: fixed;
+  z-index: 999;
+  right: 0px;
+  bottom: 30px;
+}
+
+.error-close {
+  margin-right: 0px; margin-left: auto;
+}
