@@ -11,8 +11,10 @@
 }
 
 .bg-img {
-  background-image: url("../../assets/datacenter.jpg");
-  background-repeat: no-repeat;
+  background: url("../../assets/datacenter.jpg") no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
   background-size: cover;
 }
 
