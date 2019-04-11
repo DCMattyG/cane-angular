@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AuthService } from './auth/auth.service';
 
 @Component({
@@ -7,22 +7,19 @@ import { AuthService } from './auth/auth.service';
   styleUrls: ['./app.component.scss']
 })
 
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'cane-angular';
-  user = 'none';
   menuOpen = false;
 
   constructor(private authService: AuthService) { }
 
   toggleMenu() {
+    console.log(event.target);
     this.menuOpen = this.menuOpen == true ? false : true;
   }
 
   logout() {
+    this.toggleMenu();
     this.authService.logout();
-  }
-
-  ngOnInit() {
-    this.user = JSON.parse(localStorage.getItem('currentUser'))['username'];
   }
 }
