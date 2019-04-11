@@ -1,0 +1,25 @@
+.login-center {
+  display: inline-block;
+  position: fixed;
+  margin: auto;
+  width: 400px;
+  height: 300px;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+
+.bg-img {
+  background-image: url("../../assets/datacenter.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+input[type=text] {
+  outline: none;
+}
+
+input[type=password] {
+  outline: none;
+}

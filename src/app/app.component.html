@@ -1,78 +1,84 @@
-<div class="content-wrapper">
+<ng-container *ngIf="!(authService.isAuthenticated() | async)">
+  <app-login></app-login>
+</ng-container>
 
-  <header class="header header--tall">
-    <div class="header-bar container">
-      <a href="javascript:;" class="header-bar__logo">
-        <span class="icon-cisco"></span>
-      </a>
-      <div class="header-bar__main">
-        <div class="header-heading">
-          <h1 class="page-title">Cisco API Normalization Engine</h1>
+<ng-container *ngIf="(authService.isAuthenticated() | async)">
+  <div class="content-wrapper">
+
+    <header class="header header--tall">
+      <div class="header-bar container">
+        <a href="javascript:;" class="header-bar__logo">
+          <span class="icon-cisco"></span>
+        </a>
+        <div class="header-bar__main">
+          <div class="header-heading">
+            <h1 class="page-title">Cisco API Normalization Engine</h1>
+          </div>
+          <div class="header-menus">
+            <ul class="nav nav-tabs">
+              <li class="tab">
+                <a tabindex="1" routerLink="/home" routerLinkActive="active">
+                  <div class="tab__heading" title="home">Home</div>
+                </a>
+              </li>
+              <li class="tab">
+                <a tabindex="2" routerLink="/account" routerLinkActive="active">
+                  <div class="tab__heading" title="accountss">Accounts</div>
+                </a>
+              </li>
+              <li class="tab" routerLink="/api" routerLinkActive="active">
+                <a tabindex="3">
+                  <div class="tab__heading" title="apis">API's</div>
+                </a>
+              </li>
+              <li class="tab" routerLink="/workflow" routerLinkActive="active">
+                <a tabindex="4">
+                  <div class="tab__heading" title="workflows">Workflows</div>
+                </a>
+              </li>
+              <li class="tab" routerLink="/job" routerLinkActive="active">
+                <a tabindex="5">
+                  <div class="tab__heading" title="jobs">Jobs</div>
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div class="header-menus">
-          <ul class="nav nav-tabs">
-            <li class="tab">
-              <a tabindex="1" routerLink="/home" routerLinkActive="active">
-                <div class="tab__heading" title="home">Home</div>
-              </a>
-            </li>
-            <li class="tab">
-              <a tabindex="2" routerLink="/account" routerLinkActive="active">
-                <div class="tab__heading" title="accountss">Accounts</div>
-              </a>
-            </li>
-            <li class="tab" routerLink="/api" routerLinkActive="active">
-              <a tabindex="3">
-                <div class="tab__heading" title="apis">API's</div>
-              </a>
-            </li>
-            <li class="tab" routerLink="/workflow" routerLinkActive="active">
-              <a tabindex="4">
-                <div class="tab__heading" title="workflows">Workflows</div>
-              </a>
-            </li>
-            <li class="tab" routerLink="/job" routerLinkActive="active">
-              <a tabindex="5">
-                <div class="tab__heading" title="jobs">Jobs</div>
-              </a>
-            </li>
-          </ul>
+        <div class="header-toolbar">
+          <div class="dropdown dropdown--left" [ngClass]="{'active': menuOpen}">
+              <button type="button" class="btn btn--small" (click)="toggleMenu()">{{ user }}</button>
+              <div class="dropdown__menu">
+                <a>Profile</a>
+                <div class="dropdown__divider"></div>
+                <a (click)="logout()">Logout</a>
+              </div>
+          </div>
         </div>
       </div>
-      <div class="header-toolbar">
-        <div class="dropdown dropdown--left" [ngClass]="{'active': menuOpen}">
-            <button type="button" class="btn btn--small" (click)="toggleMenu()">{{ user }}</button>
-            <div class="dropdown__menu">
-              <a>Profile</a>
-              <div class="dropdown__divider"></div>
-              <a>Logout</a>
-            </div>
-        </div>
-      </div>
+    </header>
+
+    <div class="content" style="height:100%">
+      <router-outlet></router-outlet>
     </div>
-  </header>
 
-  <div class="content" style="height:100%">
-    <router-outlet></router-outlet>
+    <footer class="footer footer--basic footer--compressed" style="position: relative">
+      <div class="footer__links">
+        <ul class="list">
+          <li><a href="http://www.cisco.com/cisco/web/siteassets/contacts/index.html" target="_blank">Contacts</a></li>
+          <li><a href="https://secure.opinionlab.com/ccc01/o.asp?id=jBjOhqOJ" target="_blank">Feedback</a></li>
+          <li><a href="https://www.cisco.com/c/en/us/about/help.html" target="_blank">Help</a></li>
+          <li><a href="http://www.cisco.com/c/en/us/about/sitemap.html" target="_blank">Site Map</a></li>
+          <li><a href="https://www.cisco.com/c/en/us/about/legal/terms-conditions.html" target="_blank">Terms &
+              Conditions</a></li>
+          <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html" target="_blank">Privacy Statement</a>
+          </li>
+          <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html#cookies" target="_blank">Cookie
+              Policy</a></li>
+          <li><a href="https://www.cisco.com/c/en/us/about/legal/trademarks.html" target="_blank">Trademarks</a></li>
+        </ul>
+      </div>
+    </footer>
+
   </div>
-
-  <footer class="footer footer--basic footer--compressed" style="position: relative">
-    <div class="footer__links">
-      <ul class="list">
-        <li><a href="http://www.cisco.com/cisco/web/siteassets/contacts/index.html" target="_blank">Contacts</a></li>
-        <li><a href="https://secure.opinionlab.com/ccc01/o.asp?id=jBjOhqOJ" target="_blank">Feedback</a></li>
-        <li><a href="https://www.cisco.com/c/en/us/about/help.html" target="_blank">Help</a></li>
-        <li><a href="http://www.cisco.com/c/en/us/about/sitemap.html" target="_blank">Site Map</a></li>
-        <li><a href="https://www.cisco.com/c/en/us/about/legal/terms-conditions.html" target="_blank">Terms &
-            Conditions</a></li>
-        <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html" target="_blank">Privacy Statement</a>
-        </li>
-        <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html#cookies" target="_blank">Cookie
-            Policy</a></li>
-        <li><a href="https://www.cisco.com/c/en/us/about/legal/trademarks.html" target="_blank">Trademarks</a></li>
-      </ul>
-    </div>
-  </footer>
-
-</div>
-<app-error></app-error>
+  <app-error></app-error>
+</ng-container>

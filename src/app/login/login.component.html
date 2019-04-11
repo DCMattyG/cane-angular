@@ -1,0 +1,33 @@
+<div class="bg-img" style="height: 100%; width: 100%;">
+  <div class="login-center">
+    <div class="card card--raised">
+      <div class="card__header" style="text-align: center;">
+        <div style="padding: 20px 0px 5px 0px;"><img src="../../assets/cisco_logo_blue.png" width="50"></div>
+        <h4 class="card__title">CANE</h4>
+        <!-- <div class="card__subtitle">Login</div> -->
+      </div>
+
+      <div class="divider" style="margin-right: auto; margin-left: auto; width: 75%;"></div>
+
+      <div style="margin-right: auto; margin-left: auto; text-align: center" *ngIf="error">
+        <span class="icon-warning-outline text--danger" style="font-size: 8px;"> Invalid Username/Password</span>
+      </div>
+
+      <div class="card__body">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <div class="form-group" style="text-align: center; margin: auto; width: 60%">
+            <span>Username</span>
+            <input type="text" formControlName="username" class="form-control"/>
+          </div>
+          <div class="form-group" style="padding-top: 5px; text-align: center; margin: auto; width: 60%">
+            <span>Password</span>
+            <input type="password" formControlName="password" class="form-control"/>
+          </div>
+          <div class="form-group" style="align-items: center;">
+            <button type="submit" [disabled]="!loginForm.valid" class="btn btn--small btn-primary">Login</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
