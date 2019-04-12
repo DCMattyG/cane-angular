@@ -38,9 +38,9 @@ export class AuthService {
   }
 
   public login(username: string, password: string) {
-    var loginURL = environment.baseUrl + '/login';
+    var loginUrl = environment.baseUrl + '/login';
 
-    return this.http.post<any>(loginURL, { username: username, password: password })
+    return this.http.post<any>(loginUrl, { username: username, password: password })
       .pipe(map(user => {
         // login successful if there's a jwt token in the response
         if (user && user.token) {

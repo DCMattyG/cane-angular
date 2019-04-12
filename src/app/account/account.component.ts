@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators, FormControl } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { CaneService } from '../cane/cane.service';
 
 interface Account {
   authType: string;
@@ -41,41 +42,41 @@ export class AccountComponent {
     })
   });
 
-  constructor(private http:HttpClient, private fb: FormBuilder) { 
+  constructor(private caneService: CaneService, private http:HttpClient, private fb: FormBuilder) { 
     this.getAccounts();
     this.accounts = [];
   }
 
-  deleteAccount(dName) {
-    var headers = new HttpHeaders().set('Authorization', this.auth);
-
-    this.http.delete(this.baseUrl + '/device/' + dName, { headers: headers }).subscribe((res : any[]) => {
-      console.log(res);
-      this.getAccounts();
+  deleteAccount(accountName: string) {
+    this.caneService.deleteAccount(accountName)
+    .subscribe(
+      res => {
+        console.log(res);
+        this.getAccounts();
     });
   }
 
   getAccounts() {
-    var headers = new HttpHeaders().set('Authorization', this.auth);
-
     this.accounts = [];
-    this.http.get(this.baseUrl + '/device', { headers: headers }).subscribe((res : any[]) => {
-      console.log(res);
-      if(res) {
-        res['devices'].forEach(element => {
-          this.getAccountDetail(element);
-        });
-      }
+    this.caneService.getAccount()
+    .subscribe(
+      res => {
+        console.log(res);
+        if(res) {
+          res['devices'].forEach(
+            element => {
+              this.getAccountDetail(element);
+          });
+        }
     });
   }
 
-  getAccountDetail(dName) {
-    var headers = new HttpHeaders().set('Authorization', this.auth);
-
-    this.http.get(this.baseUrl + '/device/' + dName, { headers: headers }).subscribe((res) => {
+  getAccountDetail(accountName: string) {
+    this.caneService.getAccountDetail(accountName)
+    .subscribe((res) => {
       console.log(res);
       res['status'] = "1";
-      res['endpoint'] = this.baseUrl + "/" + dName;
+      res['endpoint'] = this.baseUrl + "/" + accountName;
       delete res['authObj'];
       console.log(res);
       this.accounts.push(<Account>res);
@@ -96,11 +97,7 @@ export class AccountComponent {
     this.newAccount = true;
   }
 
-  openComponentModal() {
-    // this.cuiModalService.showComponent(ModalContentComponent, { /* data */ });
-  }
-
-  onAuthChange(authValue) {
+  onAuthChange() {
     //TODO move to nested form groups and rest instead
     this.accountForm.patchValue({
       authObj: {
@@ -131,18 +128,7 @@ export class AccountComponent {
       }
     }
 
-    /*
-      headerSettings['Authorization'] = 'Bearer ' + token;
-      headerSettings['Content-Type'] = 'application/json';
-      const newHeader = new HttpHeaders(headerSettings);
-    */
-
-    var headers = new HttpHeaders().set('Authorization', this.auth);
-
-    console.log(headers);
-    console.log(JSON.stringify(data));
-
-    this.http.post(this.baseUrl + '/device', JSON.stringify(data), { headers: headers, responseType: 'text'})
+    this.caneService.createAccount(data)
     .subscribe(data  => {
       console.log("POST Request is successful ", data);
       this.closeModal();

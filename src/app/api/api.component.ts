@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment.prod';
 import { Validators, FormBuilder, FormControl } from '@angular/forms';
+import { CaneService } from '../cane/cane.service';
 
 interface ApiDetail {
   name: string;
@@ -42,8 +43,6 @@ export class ApiComponent implements OnInit{
     "DELETE"
   ];
 
-  auth = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJjbGllbnQiOiIgIiwidGltZSI6MTU0Nzc5ODY5Mn0.ticg5h9271elVkjQBGrNn7tw3QMlVBw-ysgWx2Bcgsg';
-
   newApiForm = this.fb.group({
     name: ['', [Validators.required, this.noWhitespaceValidator]],
     deviceAccount: ['', Validators.required],
@@ -53,20 +52,20 @@ export class ApiComponent implements OnInit{
     body: [''],
   });
 
-  constructor(private http:HttpClient, private fb: FormBuilder) {}
+  constructor(private caneService: CaneService, private http:HttpClient, private fb: FormBuilder) {}
 
   refreshApis() {
     this.apis = [];
     this.accounts = [];
 
-    this.getAccountPromise()
+    this.caneService.getAccount().toPromise()
     .then((res) => {
       res['devices'].forEach((account) => {
-        this.getApiPromise(account)
+        this.caneService.getApi(account).toPromise()
         .then((res) => {
           if(res) {
             res['apis'].forEach((api) => {
-              this.getApiDetailPromise(account, api)
+              this.caneService.getApiDetail(account, api).toPromise()
               .then((res: ApiDetail) => {
                 let thisAccount: Api;
       
@@ -86,58 +85,30 @@ export class ApiComponent implements OnInit{
     });
   }
 
-  getAccountPromise(): Promise<Object> {
-    var headers = new HttpHeaders().set('Authorization', this.auth);
-
-    return this.http.get(this.baseUrl + '/device', { headers: headers }).toPromise()
-  }
-
-  getApiPromise(account: string): Promise<Object> {
-    var headers = new HttpHeaders().set('Authorization', this.auth);
-
-    return this.http.get(this.baseUrl + '/api/' + account, { headers: headers }).toPromise()
-  }
-
-  getApiDetailPromise(account: string, api: string): Promise<Object> {
-    var headers = new HttpHeaders().set('Authorization', this.auth);
-
-    return this.http.get(this.baseUrl + '/api/' + account + '/' + api, { headers: headers }).toPromise()
-  }
-
-  deleteDeviceApi(dName, apiName) {
-    var headers = new HttpHeaders().set('Authorization', this.auth);
-
-    this.http.delete(this.baseUrl + '/api/' + dName + '/' + apiName, { headers: headers })
+  deleteAccountApi(accountName: string, apiName: string) {
+    this.caneService.deleteAccountApi(accountName, apiName)
     .subscribe((res) => {
       console.log(res);
 
       this.refreshApis();
-	  });
-  }
-
-  setDefaultValues() {
-    this.newApiForm
-    .setValue({
-      type: this.typeList[0],
-      method: this.methodList[0]
-    })
+    });
   }
 
   onSubmit() {
-	  let data = this.newApiForm.value;
-
-	  var headers = new HttpHeaders().set('Authorization', this.auth);
-
-    this.http.post(this.baseUrl + '/api', JSON.stringify(data), { headers: headers })
-    .subscribe((data)  => {
-      console.log("POST Request Success: ", data);
-      this.closeModal();
-      this.refreshApis();
-    },
-    error  => {
-      console.log("Error: ", error);
-      console.log(data);
-    });
+    let data = this.newApiForm.value;
+    
+    this.caneService.createAccount(data)
+    .subscribe(
+      data  => {
+        console.log("POST Request Success: ", data);
+        this.closeModal();
+        this.refreshApis();
+      },
+      error  => {
+        console.log("Error: ", error);
+        console.log(data);
+      }
+    );
   }
 
   openModal() {
