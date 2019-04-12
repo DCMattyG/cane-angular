@@ -45,6 +45,9 @@
           </div>
         </div>
         <div class="header-toolbar">
+          <button type="button" class="btn btn--icon btn--small btn--secondary" style="margin-right: 10px;" (click)="testError()">
+            <span class="icon-tools"></span>
+          </button>
           <div class="dropdown dropdown--left" [ngClass]="{'active': menuOpen}">
               <button type="button" class="btn btn--small" (click)="toggleMenu()">{{ (authService.getCurrentUser() | async) }}</button>
               <div class="dropdown__menu">

@@ -477,6 +477,9 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     if(target == 'add') {
       this.newEditor = true;
     } else if(target == 'edit') {
+      this.editWorkflowDetails.patchValue({ workflowName: this.workflowEditor.value.workflowName });
+      this.editWorkflowDetails.patchValue({ workflowDescription: this.workflowEditor.value.workflowDescription });
+
       this.editDetails = true;
     }
   }

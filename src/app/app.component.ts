@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from './auth/auth.service';
+import { ErrorService } from './error/error.service';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,7 @@ export class AppComponent {
   title = 'cane-angular';
   menuOpen = false;
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private errorService: ErrorService) { }
 
   toggleMenu() {
     this.menuOpen = this.menuOpen == true ? false : true;
@@ -20,5 +21,9 @@ export class AppComponent {
   logout() {
     this.toggleMenu();
     this.authService.logout();
+  }
+
+  testError() {
+    this.errorService.newError('Test', 'This is a test error.');
   }
 }

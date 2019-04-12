@@ -4,6 +4,7 @@ import { environment } from 'src/environments/environment';
 
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { ErrorService } from '../error/error.service';
 
 interface Workflow {
   description: string;
@@ -24,7 +25,7 @@ export class WorkflowComponent {
 
   auth = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJjbGllbnQiOiIgIiwidGltZSI6MTU0Nzc5ODY5Mn0.ticg5h9271elVkjQBGrNn7tw3QMlVBw-ysgWx2Bcgsg';
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private errorService: ErrorService) {
     this.baseUrl = environment.baseUrl;
     this.getCaneWorkflow();
     this.workflows = [];
@@ -36,8 +37,11 @@ export class WorkflowComponent {
     this.http.get(this.baseUrl + '/workflow', { headers: headers })
     .pipe(
       catchError(err => {
-        console.error(err.message);
-        console.log("Error is handled");
+        console.log("Caught:");
+        console.log(err);
+        console.error(err['message']);
+        console.log("Error is handled!");
+        this.errorService.newError(err.statusText, err.message);
         return throwError("Error thrown from catchError");
       })
     ).subscribe(res => {

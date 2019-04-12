@@ -1,10 +1,10 @@
 <div class="error-stack">
-  <div class="toast" *ngFor="let error of errors; index as i">
-      <div class="toast__icon text-danger icon-error-outline"></div>
+  <div [@slideInOut] class="toast" *ngFor="let error of errors; index as i">
+      <div class="toast__icon text-danger icon-error-outline" style="margin-right: auto;"></div>
       <div class="toast__body">
           <div class="toast__title">{{ error.title }}</div>
           <div class="toast__message">{{ error.message }}</div>
       </div>
-      <div class="toast__icon icon-close error-close" (click)="removeError(i)"></div>
+      <div class="toast__icon icon-close error-close" (click)="removeError(i)" style="margin-left: auto;"></div>
   </div>
 </div>
