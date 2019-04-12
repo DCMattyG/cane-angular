@@ -59,7 +59,9 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
 
   public workflowEditor: FormGroup;
   public newWorkflowStep: FormGroup;
+  public editWorkflowDetails: FormGroup;
   private newEditor = false;
+  private editDetails = false;
 
   constructor(private _fb: FormBuilder, private changeDetector: ChangeDetectorRef) { }
 
@@ -71,10 +73,13 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     this.initTracker();
 
     this.workflowEditor = this._fb.group({
-      workflowName: [''],
+      workflowName: ['NewWorkflow'],
+      workflowDescription: ['New Workflow...'],
       steps: this._fb.array([
           // this.initSteps(),
       ])
+    }, {
+      validator: [this.validateSteps]
     });
 
     this.newWorkflowStep = this._fb.group({
@@ -82,10 +87,16 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
       stepAccount: ['', Validators.required],
       stepAPI: ['', Validators.required]
     });
+
+    this.editWorkflowDetails = this._fb.group({
+      workflowName: ['', Validators.required],
+      workflowDescription: ['', Validators.required]
+    });
   }
 
   onSubmit() {
     console.log("Saving...");
+    console.log(this.workflowEditor.value);
   }
 
   initTracker() {
@@ -131,6 +142,8 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
       selected: [false],
       name: [''],
       value: ['']
+    }, {
+      validator: [this.validateGroup]
     });
   }
 
@@ -139,6 +152,8 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
       selected: [false],
       name: [''],
       value: ['']
+    }, {
+      validator: [this.validateGroup]
     });
   }
 
@@ -190,6 +205,18 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
           break;
         case 'string':
           return null;
+      }
+
+      return { isValid: false };
+    }
+  }
+
+  validateSteps (group: FormGroup) {
+    if(group) {
+      var numSteps = group.controls['steps'].value.length;
+      
+      if(numSteps > 0) {
+        return null;
       }
 
       return { isValid: false };
@@ -256,7 +283,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
   }
 
   addStep() {
-    this.closeModal();
+    this.closeModal('add');
 
     var newTitle = this.newWorkflowStep.value.stepTitle;
     var newAccount = this.newWorkflowStep.value.stepAccount;
@@ -279,6 +306,13 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
         control.removeAt(i);
       }
     }
+  }
+
+  modifyDetails() {
+    this.workflowEditor.patchValue({ workflowName: this.editWorkflowDetails.value.workflowName });
+    this.workflowEditor.patchValue({ workflowDescription: this.editWorkflowDetails.value.workflowDescription });
+
+    this.closeModal('edit');
   }
 
   // getDropState(index: number) {
@@ -439,12 +473,20 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     }
   }
 
-  openModal() {
-    this.newEditor = true;
+  openModal(target: string) {
+    if(target == 'add') {
+      this.newEditor = true;
+    } else if(target == 'edit') {
+      this.editDetails = true;
+    }
   }
 
-  closeModal() {
-    this.newEditor = false;
+  closeModal(target: string) {
+    if(target == 'add') {
+      this.newEditor = false;
+    } else if(target == 'edit') {
+      this.editDetails = false;
+    }
   }
 
   getAccounts() {

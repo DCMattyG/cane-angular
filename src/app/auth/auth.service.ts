@@ -3,6 +3,7 @@ import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { of, Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +38,9 @@ export class AuthService {
   }
 
   public login(username: string, password: string) {
-    return this.http.post<any>('http://127.0.0.1:8005/login', { username: username, password: password })
+    var loginURL = environment.baseUrl + '/login';
+
+    return this.http.post<any>(loginURL, { username: username, password: password })
       .pipe(map(user => {
         // login successful if there's a jwt token in the response
         if (user && user.token) {

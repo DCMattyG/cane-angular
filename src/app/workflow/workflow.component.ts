@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+
+import { throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 interface Workflow {
   description: string;
@@ -30,8 +33,15 @@ export class WorkflowComponent {
   getCaneWorkflow() {
     var headers = new HttpHeaders().set('Authorization', this.auth);
 
-    this.http.get(this.baseUrl + '/workflow', { headers: headers }).subscribe((res : any[]) => {
-      console.log(res);
+    this.http.get(this.baseUrl + '/workflow', { headers: headers })
+    .pipe(
+      catchError(err => {
+        console.error(err.message);
+        console.log("Error is handled");
+        return throwError("Error thrown from catchError");
+      })
+    ).subscribe(res => {
+      // console.log(res);
 
       res['workflows'].forEach(element => {
         this.getCaneWorkflowDetail(element);
@@ -42,8 +52,9 @@ export class WorkflowComponent {
   getCaneWorkflowDetail(wfName) {
     var headers = new HttpHeaders().set('Authorization', this.auth);
 
-    this.http.get(this.baseUrl + '/workflow/' + wfName, { headers: headers }).subscribe((res : Workflow)=>{
-      console.log(res);
+    this.http.get(this.baseUrl + '/workflow/' + wfName, { headers: headers })
+    .subscribe((res : Workflow)=>{
+      // console.log(res);
       this.workflows.push(res);
     });
   }

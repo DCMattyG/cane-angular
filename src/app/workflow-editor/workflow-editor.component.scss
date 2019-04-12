@@ -167,6 +167,10 @@ input[type=text]:focus {
   outline: none;
 }
 
+textarea:focus {
+  outline: none;
+}
+
 tbody > tr:first-child > td {
   border-top: none !important;
 }
@@ -189,4 +193,15 @@ input.ng-dirty.ng-invalid {
 
 .step-down {
   padding: 0px 10px 0px 5px;
+}
+
+.modal__dialog {
+  display: inline-block;
+  position: fixed;
+  margin: auto;
+  height: 550px;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
 }

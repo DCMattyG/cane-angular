@@ -14,7 +14,6 @@ export class AppComponent {
   constructor(private authService: AuthService) { }
 
   toggleMenu() {
-    console.log(event.target);
     this.menuOpen = this.menuOpen == true ? false : true;
   }
 
