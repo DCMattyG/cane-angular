@@ -60,11 +60,11 @@
                           <div class="tab__heading">Request</div>
                         </a>
                       </li>
-                      <li id="response-tab" class="tab" (click)="setEditorTab(i, 'resp')" [ngClass]="{'active' : stateTracker.steps[i].currentTab == 'resp'}">
+                      <!-- <li id="response-tab" class="tab" (click)="setEditorTab(i, 'resp')" [ngClass]="{'active' : stateTracker.steps[i].currentTab == 'resp'}">
                         <a tabindex="0">
                           <div class="tab__heading">Response Validator</div>
                         </a>
-                      </li>
+                      </li> -->
                       <li id="extractor-tab" class="tab" (click)="setEditorTab(i, 'extract')" [ngClass]="{'active' : stateTracker.steps[i].currentTab == 'extract'}">
                         <a tabindex="0">
                           <div class="tab__heading">Variable Extractor</div>
@@ -81,7 +81,7 @@
                         <div class="editor-button-raw" [ngClass]="{'hide' : stateTracker.steps[i].requestWindow != 'raw'}">
                           <button type="button" class="btn btn--icon btn--small btn--secondary editor-button-action" (click)="editorUndo(i)"><span class="icon-redial"></span></button>
                           <button type="button" class="btn btn--icon btn--small btn--secondary editor-button-action" (click)="editorRedo(i)"><span class="icon-refresh"></span></button>
-                          <button type="button" class="btn btn--icon btn--small btn--success editor-button-action" (click)="updateRequest(i)" [ngClass]="{'disabled' : editorErrors(i) != 0}">
+                          <button type="button" class="btn btn--icon btn--small btn--success editor-button-action" (click)="updateRequest(i); parseQueryString(i);" [ngClass]="{'disabled' : editorErrors(i) != 0}">
                             <span class="icon-check"></span>
                           </button>
                         </div>
@@ -144,8 +144,13 @@
                         </div>
                       </div>
                       <div id="request-content-raw" class="tab-pane" [ngClass]="{'active' : stateTracker.steps[i].requestWindow == 'raw'}">
-                        <div class="editor-ide">
-                          <app-code-editor #requestEditor [id]="i"></app-code-editor>
+                        <div style="height: 250px;">
+                          <div class="editor-ide">
+                            <app-code-editor #requestEditor [size]="17" [id]="i"></app-code-editor>
+                          </div>
+                          <div class="editor-ide-query">
+                            <input #queryEditor spellcheck="false" type="text" [id]="i">
+                          </div>
                         </div>
                       </div>
                       <div id="request-content-header" class="tab-pane" [ngClass]="{'active' : stateTracker.steps[i].requestWindow == 'head'}">

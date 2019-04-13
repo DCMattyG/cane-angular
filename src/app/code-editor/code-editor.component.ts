@@ -17,40 +17,23 @@ export class CodeEditorComponent implements OnInit{
   @ViewChild('codeEditor') codeEditorElmRef: ElementRef;
   // @Output() editorData: EventEmitter<any> = new EventEmitter<any>();
   @Input() id: number;
+  @Input() size: number;
   public codeEditor: ace.Ace.Editor;
 
   constructor() { }
-
-  // sendUpdate()
-  // {
-  //   var update = {
-  //     value: this.codeEditor.getSession().getValue(),
-  //     error: this.codeEditor.getSession().getAnnotations()
-  //   }
-
-  //   this.editorData.emit(update);
-  // }
 
   ngOnInit() {
     const element = this.codeEditorElmRef.nativeElement;
 
     const editorOptions: Partial<ace.Ace.EditorOptions> = {
         highlightActiveLine: true,
-        minLines: 20,
-        maxLines: 20,
+        minLines: this.size || 20,
+        maxLines: this.size || 20,
     };
 
     this.codeEditor = ace.edit(element, editorOptions);
     this.codeEditor.setTheme(THEME);
     this.codeEditor.getSession().setMode(LANG);
     this.codeEditor.setShowFoldWidgets(true);
-    // this.codeEditor.on("blur", () => {
-    //   var update = {
-    //     value: this.codeEditor.getSession().getValue(),
-    //     error: this.codeEditor.getSession().getAnnotations()
-    //   }
-  
-    //   this.editorData.emit(update);
-    // });
   }
 }

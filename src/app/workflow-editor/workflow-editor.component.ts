@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnInit, ViewChildren, QueryList, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, OnInit, ViewChildren, QueryList, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { FormGroup, FormBuilder, FormArray, Validators, AbstractControl, FormControl } from '@angular/forms';
 import { CodeEditorComponent } from '../code-editor/code-editor.component';
@@ -35,6 +35,7 @@ const VALID_NAME = /^([a-zA-Z]+)(\.(([a-zA-Z]+)|(\d+\.[a-zA-Z]+)))*(\.\d+)?$/;
 
 export class WorkflowEditorComponent implements AfterViewInit, OnInit {
   @ViewChildren('requestEditor') requestEditors: QueryList<CodeEditorComponent>;
+  @ViewChildren('queryEditor') queryEditors: QueryList<ElementRef>;
   @ViewChildren('responseEditor') responseEditors: QueryList<CodeEditorComponent>;
 
   fakeApis = {
@@ -411,6 +412,65 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
 
       control.push(newControl);
     });
+  }
+
+  parseQueryString(index: number) {
+    // var paramName = "";
+    var obj = {}
+    var split;
+
+    if(this.queryEditors) {
+      var selectedQuery = this.queryEditors.find(query => query.nativeElement.id == index.toString());
+      var data = selectedQuery.nativeElement.value;
+      split = data.split('&');
+
+      split.forEach((item) => {
+        var temp = item.split('=')
+        if(temp[0] && temp[1]) {
+          if(temp[0].length > 0 && temp[1].length > 0) {
+            obj[temp[0]] = temp[1]
+          }
+        }
+      })
+    } else {
+      console.log("Cannot Locate queryEditors!");
+    }
+
+    console.log(obj);
+
+    // var control = (<FormArray>this.workflowEditor.controls['steps']).at(index).get('params') as FormArray;
+
+    // while(control.controls.length != 0) {
+    //   control.removeAt(0);
+    // }
+
+    // Object.keys(obj).forEach((key) => {
+    //   paramName = key;
+
+    //   if(typeof(target[key]) == "number") {
+    //     // console.log(key + " => " + (+tgt[key]) + "(num)");
+    //     fieldType = "number"
+    //   } else if(typeof(target[key]) == "boolean") {
+    //     // console.log(key + " => " + tgt[key] + "(bool)");
+    //     fieldType = "boolean"
+    //   } else if(typeof(target[key]) == "string"){
+    //     // console.log(key + " => " + tgt[key] + "(str)");
+    //     fieldType = "string"
+    //   } else {
+    //     console.log("Unkown Type: " + target[key]);
+    //   }
+
+    //   var newControl = this._fb.group({
+    //     selected: [false],
+    //     name: [paramName],
+    //     descr: [''],
+    //     paramType: ['body'],
+    //     fieldType: [fieldType],
+    //     value: [target[key]]
+    //   });
+
+    //   control.push(newControl);
+    // }
   }
 
   paramToRAW(index: number) {
