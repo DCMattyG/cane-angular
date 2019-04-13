@@ -19,7 +19,7 @@
           <tbody>
             <tr *ngFor="let account of accounts">
               <td>
-                <a (click)="openDeviceModal(account.name)">{{ account.name }}</a>
+                <a (click)="openModal()">{{ account.name }}</a> <!-- Placeholder to setup edit stuff -->
               </td>
               <td>{{ account.authType }}</td>
               <td>{{ account.baseURL }}</td>
