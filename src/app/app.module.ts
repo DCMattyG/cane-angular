@@ -16,6 +16,8 @@ import { CodeEditorComponent } from './code-editor/code-editor.component';
 import { WorkflowNewComponent } from './workflow-new/workflow-new.component';
 import { ErrorComponent } from './error/error.component';
 import { LoginComponent } from './login/login.component';
+import { JobdetailsComponent } from './jobdetails/jobdetails.component';
+import { ProfileComponent } from './profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +31,9 @@ import { LoginComponent } from './login/login.component';
     CodeEditorComponent,
     WorkflowNewComponent,
     ErrorComponent,
-    LoginComponent
+    LoginComponent,
+    JobdetailsComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,

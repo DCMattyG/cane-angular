@@ -51,7 +51,7 @@
           <div class="dropdown dropdown--left" [ngClass]="{'active': menuOpen}">
               <button type="button" class="btn btn--small" (click)="toggleMenu()">{{ (authService.getCurrentUser() | async) }}</button>
               <div class="dropdown__menu">
-                <a>Profile</a>
+                <a [routerLink]="['/profile/']">Profile</a>
                 <div class="dropdown__divider"></div>
                 <a (click)="logout()">Logout</a>
               </div>

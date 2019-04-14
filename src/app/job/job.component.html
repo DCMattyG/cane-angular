@@ -11,7 +11,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let claim of jobs">
-            <td>{{ claim.claimCode }}</td>
+            <td><a [routerLink]="['/job/' + claim.claimCode]">{{ claim.claimCode }}</a></td>
             <td>{{ claim.timestamp }}</td>
             <td>{{ claim.currentStatus }}</td>
           </tr>

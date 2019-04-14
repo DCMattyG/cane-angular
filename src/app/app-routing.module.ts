@@ -8,6 +8,8 @@ import { JobComponent } from './job/job.component';
 import { WorkflowNewComponent } from './workflow-new/workflow-new.component';
 import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './auth/auth.guard';
+import { JobdetailsComponent } from './jobdetails/jobdetails.component';
+import { ProfileComponent } from './profile/profile.component';
 
 const routes: Routes = [
   // { path: '',
@@ -52,6 +54,18 @@ const routes: Routes = [
   {
     path: 'job',
     component: JobComponent,
+    pathMatch: 'full',
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'job/:jobid',
+    component: JobdetailsComponent,
+    pathMatch: 'full',
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'profile',
+    component: ProfileComponent,
     pathMatch: 'full',
     canActivate: [AuthGuard]
   },
