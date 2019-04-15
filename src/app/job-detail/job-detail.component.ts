@@ -14,7 +14,7 @@ export class JobdetailComponent implements OnInit {
 
   baseUrl: string;
   jobId: string;
-  job: Job;
+  job: Job = <Job>{};
   auth: string;
 
   constructor(

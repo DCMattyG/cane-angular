@@ -1,8 +1,7 @@
 <div class="content">
   <div class="container">
     <div class="section">
-      <h1>Job Details</h1>
-      <br>
+      <h1 style="padding-bottom: 10px;">Job Details</h1>
 
       <div class="panel panel--bordered panel--raised-small ">
         <table class='table table--nostripes '>
@@ -25,7 +24,7 @@
         <h3>Workflow Steps</h3>
         <div class="divider divider--loose divider--thick divider--accent-success"></div>
 
-        <div class="row" *ngFor="let stepResult of job.results | keyvalue">
+        <div class="row" *ngFor="let stepResult of job['results'] | keyvalue">
           <div class="col-md-1">
             <div class="text-center">
               <span class="label label--large label--circle label--indigo">{{ stepResult.value.step }}</span>
