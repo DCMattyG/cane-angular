@@ -13,6 +13,13 @@ export class JobComponent {
   jobs: Job[];
   baseUrl: string;
 
+  statusMap = {
+    "-1": "Error",
+    "0": "Not Started",
+    "1": "In Progress",
+    "2": "Success"
+  }
+
   constructor(private http: HttpClient, private caneService: CaneService) {
     this.baseUrl = environment.baseUrl;
     this.getJobs();

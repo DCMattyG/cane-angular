@@ -11,11 +11,17 @@ import {workflowResult, Job } from '../cane/cane';
   styleUrls: ['./job-detail.component.scss']
 })
 export class JobdetailComponent implements OnInit {
-
   baseUrl: string;
   jobId: string;
   job: Job = <Job>{};
   auth: string;
+
+  statusMap = {
+    "-1": "Error",
+    "0": "Not Started",
+    "1": "In Progress",
+    "2": "Success"
+  }
 
   constructor(
     private route: ActivatedRoute,
