@@ -103,3 +103,22 @@ export interface StepResult {
 	error: string,
 	status: number
 }
+
+// WorkflowResult Interface
+export interface workflowResult {
+  apiAccount: string;
+  apiCall: string;
+  error: string;
+  reqBody: string;
+  resBody: string;
+  status: number;
+}
+
+// Job Interface
+export interface Job {
+  claimCode: string;
+  currentStatus: number;
+  jobId: string;
+  timestamp: string;
+  results: workflowResult[];
+}

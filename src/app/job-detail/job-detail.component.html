@@ -1,0 +1,68 @@
+<div class="content">
+  <div class="container">
+    <div class="section">
+      <h1>Job Details</h1>
+      <br>
+
+      <div class="panel panel--bordered panel--raised-small ">
+        <table class='table table--nostripes '>
+          <tr>
+            <th>Claim ID</th>
+            <th>Start Time</th>
+            <th>Status</th>
+          </tr>
+          <tr>
+            <td>{{ job.claimCode }}</td>
+            <td>{{ job.timestamp }}</td>
+            <td>{{ job.currentStatus }}</td>
+          </tr>
+        </table>
+      </div>
+
+    </div>
+    <div class="section">
+      <div class="panel panel--loose panel--bordered panel--raised-small">
+        <h3>Workflow Steps</h3>
+        <div class="divider divider--loose divider--thick divider--accent-success"></div>
+
+        <div class="row" *ngFor="let stepResult of job.results | keyvalue">
+          <div class="col-md-1">
+            <div class="text-center">
+              <span class="label label--large label--circle label--indigo">{{ stepResult.value.step }}</span>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <table class='table table--nostripes table--wrap table--compressed'>
+              <tr>
+                <th>Account</th>
+                <td>{{ stepResult.value.apiAccount }}</td>
+              </tr>
+              <tr>
+                <th>API</th>
+                <td>{{ stepResult.value.apiCall }}</td>
+              </tr>
+              <tr>
+                <th>Status</th>
+                <td>{{ stepResult.value.status }}</td>
+              </tr>
+              <tr>
+                <th style='vertical-align: top;'>Request</th>
+                <td>
+                  <pre>{{ stepResult.value.reqBody | json }}</pre>
+                </td>
+              </tr>
+              <tr>
+                <th style='vertical-align: top;'>Response</th>
+                <td>
+                  <pre>{{ stepResult.value.resBody | json }}</pre>
+                </td>
+              </tr>
+            </table>
+            <div class="divider divider--loose divider--accent-blue"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

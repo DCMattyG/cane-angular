@@ -43,7 +43,7 @@
                       <span class="http-verb">
                         <strong>{{workflowEditor.controls.steps.controls[i].controls.stepVerb.value}}</strong>
                       </span>
-                      <span> {{workflowEditor.controls.steps.controls[i].controls.stepAPI.value}}</span>
+                      <span> {{workflowEditor.controls.steps.controls[i].controls.stepAPIDetail.value}}</span>
                     </div>
                   </div>
                   <div class="col-auto align-self-center text-center">
@@ -81,7 +81,7 @@
                         <div class="editor-button-raw" [ngClass]="{'hide' : stateTracker.steps[i].requestWindow != 'raw'}">
                           <button type="button" class="btn btn--icon btn--small btn--secondary editor-button-action" (click)="editorUndo(i)"><span class="icon-redial"></span></button>
                           <button type="button" class="btn btn--icon btn--small btn--secondary editor-button-action" (click)="editorRedo(i)"><span class="icon-refresh"></span></button>
-                          <button type="button" class="btn btn--icon btn--small btn--success editor-button-action" (click)="updateRequest(i); parseQueryString(i);" [ngClass]="{'disabled' : editorErrors(i) != 0}">
+                          <button type="button" class="btn btn--icon btn--small btn--success editor-button-action" (click)="updateRequest(i)" [ngClass]="{'disabled' : editorErrors(i) != 0}">
                             <span class="icon-check"></span>
                           </button>
                         </div>
@@ -288,8 +288,8 @@
                 <p class="subtitle">Account: </p>
               </td>
               <td>
-                <select formControlName="stepAccount" style="border-bottom: 1px solid #dfdfdf;">
-                  <option *ngFor="let account of getAccounts()" [value]="account">{{account}}</option>
+                <select formControlName="stepAccount" style="border-bottom: 1px solid #dfdfdf;" (change)="refreshApis(newWorkflowStep.get('stepAccount').value)">
+                  <option *ngFor="let account of accountList" [value]="account">{{ account }}</option>
                 </select>
               </td>
             </tr>
@@ -299,7 +299,7 @@
               </td>
               <td>
                 <select formControlName="stepAPI" style="border-bottom: 1px solid #dfdfdf;">
-                  <option *ngFor="let api of getApis(newWorkflowStep.get('stepAccount').value)" [value]="api">{{api}}
+                  <option *ngFor="let api of apiList" [value]="api">{{ api }}
                   </option>
                 </select>
               </td>

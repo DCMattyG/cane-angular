@@ -41,6 +41,18 @@ export class CaneService {
     return this.http.delete(this.baseUrl + '/api/' + account + '/' + api, { headers: this.headers })
   }
 
+  createWorkflow(data) {
+    return this.http.post(this.baseUrl + '/workflow', JSON.stringify(data), { headers: this.headers })
+  }
+
+  getClaim() {
+    return this.http.get(this.baseUrl + '/claim', { headers: this.headers })
+  }
+  
+  getClaimDetail(claim: string) {
+    return this.http.get(this.baseUrl + '/claim/' + claim, { headers: this.headers })
+  }
+
   /*
   getAccountPromise(): Promise<Object> {
     return this.http.get(this.baseUrl + '/device', { headers: this.headers }).toPromise()

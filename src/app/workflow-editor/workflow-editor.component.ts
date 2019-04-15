@@ -4,8 +4,10 @@ import { FormGroup, FormBuilder, FormArray, Validators, AbstractControl, FormCon
 import { CodeEditorComponent } from '../code-editor/code-editor.component';
 
 import * as dot from 'dot-object';
+import { CaneService } from '../cane/cane.service';
+import { Observable } from 'rxjs';
 
-const VALID_NAME = /^([a-zA-Z]+)(\.(([a-zA-Z]+)|(\d+\.[a-zA-Z]+)))*(\.\d+)?$/;
+const VALID_NAME = /^(\$*[a-zA-Z]+)(\.(([a-zA-Z]+)|(\d+\.[a-zA-Z]+)))*(\.\d+)?$/;
 
 @Component({
   selector: 'app-workflow-editor',
@@ -63,8 +65,13 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
   public editWorkflowDetails: FormGroup;
   private newEditor = false;
   private editDetails = false;
+  private accountList;
+  private apiList;
 
-  constructor(private _fb: FormBuilder, private changeDetector: ChangeDetectorRef) { }
+  constructor(
+    private _fb: FormBuilder,
+    private changeDetector: ChangeDetectorRef,
+    private caneService: CaneService) { }
 
   ngAfterViewInit() {
     this.changeDetector.detectChanges();
@@ -93,11 +100,14 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
       workflowName: ['', Validators.required],
       workflowDescription: ['', Validators.required]
     });
+
+    this.refreshDevices();
   }
 
   onSubmit() {
     console.log("Saving...");
     console.log(this.workflowEditor.value);
+    this.saveWorkflow(this.workflowEditor.value);
   }
 
   initTracker() {
@@ -107,26 +117,27 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     });
   }
 
-  initSteps(title: string, account: string, api: string, verb: string) {
+  initStep(title: string, account: string, api: string, apiDetail: string, verb: string) {
     return this._fb.group({
       stepTitle: [title],
       stepAccount: [account],
       stepAPI: [api],
+      stepAPIDetail: [apiDetail],
       stepVerb: [verb],
       selected: [false],
       params: this._fb.array([
-        this.initParams(),
+        this.initParam(),
       ]),
       headers: this._fb.array([
-        this.initHeaders(),
+        this.initHeader(),
       ]),
       variables: this._fb.array([
-        this.initVariables(),
+        this.initVariable(),
       ])
     });
   }
 
-  initParams() {
+  initParam() {
     return this._fb.group({
       selected: [false],
       name: ['', Validators.pattern(VALID_NAME)],
@@ -138,7 +149,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     });
   }
 
-  initHeaders() {
+  initHeader() {
     return this._fb.group({
       selected: [false],
       name: [''],
@@ -148,7 +159,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     });
   }
 
-  initVariables() {
+  initVariable() {
     return this._fb.group({
       selected: [false],
       name: [''],
@@ -226,7 +237,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
 
   addParam(index: number) {
     const control = (<FormArray>this.workflowEditor.controls['steps']).at(index).get('params') as FormArray;
-    control.push(this.initParams());
+    control.push(this.initParam());
   }
 
   removeParam(index: number) {
@@ -241,7 +252,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
 
   addHeader(index: number) {
     const control = (<FormArray>this.workflowEditor.controls['steps']).at(index).get('headers') as FormArray;
-    control.push(this.initHeaders());
+    control.push(this.initHeader());
   }
 
   removeHeader(index: number) {
@@ -256,7 +267,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
 
   addVariable(index: number) {
     const control = (<FormArray>this.workflowEditor.controls['steps']).at(index).get('variables') as FormArray;
-    control.push(this.initVariables());
+    control.push(this.initVariable());
   }
 
   removeVariable(index: number) {
@@ -288,15 +299,38 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
 
     var newTitle = this.newWorkflowStep.value.stepTitle;
     var newAccount = this.newWorkflowStep.value.stepAccount;
-    var newAPI = this.fakeApis[newAccount][this.newWorkflowStep.value.stepAPI].api;
-    var newVerb = this.fakeApis[newAccount][this.newWorkflowStep.value.stepAPI].verb;
+    var newAPI = this.newWorkflowStep.value.stepAPI
+    var newAccountDetail;
+    var newAPIDetail;
+    var newVerb;
 
-    const control = <FormArray>this.workflowEditor.controls['steps'];
-    control.push(this.initSteps(newTitle, newAccount, newAPI, newVerb));
-
-    this.initTracker();
-    this.newWorkflowStep.reset();
-    this.changeDetector.detectChanges();
+    this.caneService.getAccountDetail(newAccount).toPromise()
+    .then(
+      res=> {
+        newAccountDetail = res['baseURL']
+      }
+    )
+    .then(
+      ()=> {
+        this.caneService.getApiDetail(newAccount, newAPI).toPromise()
+        .then(
+          res=> {
+            newAPIDetail = res['path'];
+            newVerb = res['method']
+          }
+        )
+        .then(
+          () => {
+            const control = <FormArray>this.workflowEditor.controls['steps'];
+            control.push(this.initStep(newTitle, newAccount, newAPI, (newAccountDetail + newAPIDetail), newVerb));
+        
+            this.initTracker();
+            this.newWorkflowStep.reset();
+            this.changeDetector.detectChanges();
+          }
+        )
+      }
+    )
   }
 
   remStep() {
@@ -368,37 +402,35 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
   // }
 
   updateRequest(index: number) {
+    var control = (<FormArray>this.workflowEditor.controls['steps']).at(index).get('params') as FormArray;
     var selectedEditor = this.requestEditors.find(editor => editor.id == index);
     var editorValue = selectedEditor.codeEditor.getSession().getValue();
-    // var editorError = selectedEditor.codeEditor.getSession().getAnnotations()
 
     var objVal = JSON.parse(editorValue.trim());
-    var target = {};
-    dot.dot(objVal, target);
+    var bodyObj = {};
+    dot.dot(objVal, bodyObj);
 
     var paramName = "";
     var fieldType = "";
 
-    var control = (<FormArray>this.workflowEditor.controls['steps']).at(index).get('params') as FormArray;
+    var queryObj = {}
+    var split;
 
     while(control.controls.length != 0) {
       control.removeAt(0);
     }
 
-    Object.keys(target).forEach((key) => {
+    Object.keys(bodyObj).forEach((key) => {
       paramName = key;
 
-      if(typeof(target[key]) == "number") {
-        // console.log(key + " => " + (+tgt[key]) + "(num)");
+      if(typeof(bodyObj[key]) == "number") {
         fieldType = "number"
-      } else if(typeof(target[key]) == "boolean") {
-        // console.log(key + " => " + tgt[key] + "(bool)");
+      } else if(typeof(bodyObj[key]) == "boolean") {
         fieldType = "boolean"
-      } else if(typeof(target[key]) == "string"){
-        // console.log(key + " => " + tgt[key] + "(str)");
+      } else if(typeof(bodyObj[key]) == "string"){
         fieldType = "string"
       } else {
-        console.log("Unkown Type: " + target[key]);
+        console.log("Unkown Type: " + bodyObj[key]);
       }
 
       var newControl = this._fb.group({
@@ -407,17 +439,11 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
         descr: [''],
         paramType: ['body'],
         fieldType: [fieldType],
-        value: [target[key]]
+        value: [bodyObj[key]]
       });
 
       control.push(newControl);
     });
-  }
-
-  parseQueryString(index: number) {
-    // var paramName = "";
-    var obj = {}
-    var split;
 
     if(this.queryEditors) {
       var selectedQuery = this.queryEditors.find(query => query.nativeElement.id == index.toString());
@@ -428,7 +454,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
         var temp = item.split('=')
         if(temp[0] && temp[1]) {
           if(temp[0].length > 0 && temp[1].length > 0) {
-            obj[temp[0]] = temp[1]
+            queryObj[temp[0]] = temp[1]
           }
         }
       })
@@ -436,46 +462,98 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
       console.log("Cannot Locate queryEditors!");
     }
 
-    console.log(obj);
+    Object.keys(queryObj).forEach((key) => {
+      paramName = key;
 
-    // var control = (<FormArray>this.workflowEditor.controls['steps']).at(index).get('params') as FormArray;
+      if(!isNaN(queryObj[key])) {
+        fieldType = "number"
+      } else if(queryObj[key].toLowerCase() == "true" || queryObj[key].toLowerCase() == "false") {
+        fieldType = "boolean"
+      } else if(typeof(queryObj[key]) == "string"){
+        fieldType = "string"
+      } else {
+        console.log("Unkown Type: " + queryObj[key]);
+      }
 
-    // while(control.controls.length != 0) {
-    //   control.removeAt(0);
-    // }
+      var newControl = this._fb.group({
+        selected: [false],
+        name: [paramName],
+        descr: [''],
+        paramType: ['query'],
+        fieldType: [fieldType],
+        value: [queryObj[key]]
+      });
 
-    // Object.keys(obj).forEach((key) => {
-    //   paramName = key;
-
-    //   if(typeof(target[key]) == "number") {
-    //     // console.log(key + " => " + (+tgt[key]) + "(num)");
-    //     fieldType = "number"
-    //   } else if(typeof(target[key]) == "boolean") {
-    //     // console.log(key + " => " + tgt[key] + "(bool)");
-    //     fieldType = "boolean"
-    //   } else if(typeof(target[key]) == "string"){
-    //     // console.log(key + " => " + tgt[key] + "(str)");
-    //     fieldType = "string"
-    //   } else {
-    //     console.log("Unkown Type: " + target[key]);
-    //   }
-
-    //   var newControl = this._fb.group({
-    //     selected: [false],
-    //     name: [paramName],
-    //     descr: [''],
-    //     paramType: ['body'],
-    //     fieldType: [fieldType],
-    //     value: [target[key]]
-    //   });
-
-    //   control.push(newControl);
-    // }
+      control.push(newControl);
+    });
   }
+
+  // parseQueryString(index: number) {
+  //   var control = (<FormArray>this.workflowEditor.controls['steps']).at(index).get('params') as FormArray;
+  //   var paramName = "";
+  //   var fieldType = "";
+  //   var queryObj = {}
+  //   var split;
+
+  //   if(this.queryEditors) {
+  //     var selectedQuery = this.queryEditors.find(query => query.nativeElement.id == index.toString());
+  //     var data = selectedQuery.nativeElement.value;
+  //     split = data.split('&');
+
+  //     split.forEach((item) => {
+  //       var temp = item.split('=')
+  //       if(temp[0] && temp[1]) {
+  //         if(temp[0].length > 0 && temp[1].length > 0) {
+  //           queryObj[temp[0]] = temp[1]
+  //         }
+  //       }
+  //     })
+  //   } else {
+  //     console.log("Cannot Locate queryEditors!");
+  //   }
+
+  //   console.log(queryObj);
+
+  //   for(var i = 0; i < control.controls.length; i++) {
+  //     if(control.controls[i].get('paramType').value == "query") {
+  //       control.removeAt(i);
+  //     }
+  //   }
+
+  //   Object.keys(queryObj).forEach((key) => {
+  //     paramName = key;
+
+  //     if(!isNaN(queryObj[key])) {
+  //       console.log(key + " => " + (+queryObj[key]) + "(num)");
+  //       fieldType = "number"
+  //     } else if(queryObj[key].toLowerCase() == "true" || queryObj[key].toLowerCase() == "false") {
+  //       console.log(key + " => " + queryObj[key] + "(bool)");
+  //       fieldType = "boolean"
+  //     } else if(typeof(queryObj[key]) == "string"){
+  //       console.log(key + " => " + queryObj[key] + "(str)");
+  //       fieldType = "string"
+  //     } else {
+  //       console.log("Unkown Type: " + queryObj[key]);
+  //     }
+
+  //     var newControl = this._fb.group({
+  //       selected: [false],
+  //       name: [paramName],
+  //       descr: [''],
+  //       paramType: ['query'],
+  //       fieldType: [fieldType],
+  //       value: [queryObj[key]]
+  //     });
+
+  //     control.push(newControl);
+  //   });
+  // }
 
   paramToRAW(index: number) {
     var control = (<FormArray>this.workflowEditor.controls['steps']).at(index).get('params') as FormArray;
+    var selectedQuery = this.queryEditors.find(query => query.nativeElement.id == index.toString());
     var selectedEditor = this.requestEditors.find(editor => editor.id == index);
+    var queryArray = [];
     var tgt = {};
 
     for(var i = (control.controls.length - 1); i >= 0; i--) {
@@ -502,6 +580,12 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
         }
 
         tgt[key] = value;
+      } else if(control.at(i).get('paramType').value == 'query') {
+        var queryTemp = control.at(i).get('name').value;
+        queryTemp += '=';
+        queryTemp += control.at(i).get('value').value;
+
+        queryArray.push(queryTemp);
       }
     }
 
@@ -509,6 +593,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
 
     var prettyObj = JSON.stringify(tgt, null, 4);
     selectedEditor.codeEditor.getSession().setValue(prettyObj);
+    selectedQuery.nativeElement.value = queryArray.join('&');
   }
 
   editorUndo(index: number) {
@@ -552,8 +637,28 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     }
   }
 
+  refreshDevices() {
+    this.caneService.getAccount().toPromise()
+    .then(
+      res => {
+        this.accountList = res['devices'];
+      }
+    )
+  }
+
+  refreshApis(account: string) {
+    this.caneService.getApi(account).toPromise()
+    .then(
+      res => {
+        this.apiList = res['apis'];
+      }
+    )
+  }
+
   getAccounts() {
-    return Object.keys(this.fakeApis);
+    // return Object.keys(this.fakeApis);
+    // console.log(this.caneService.getAccount());
+    return this.accountList;
   }
 
   getApis(account: string) {
@@ -631,6 +736,108 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     }
 
     this.changeDetector.detectChanges();
+  }
+
+/*
+// Workflow Struct
+type Workflow struct {
+	Name        string
+	Description string
+	Type        string
+	Steps       []Step
+	// Note, add OutputMap []map[string]string
+}
+
+// Step Struct
+type Step struct {
+	title         string
+	description   string
+	apiCall       string
+	deviceAccount string
+	varMap        []map[string]string
+}
+
+// New Step Struct
+type Step struct {
+	title         string
+	description   string
+	apiCall       string
+	deviceAccount string
+  headers       []map[string]string
+  variables     []map[string]string
+  body          []map[string]string
+  query         []map[string]string
+}
+*/
+
+  saveWorkflow(data: object) {
+    var newWorkflow = {
+      name: '',
+      description: '',
+      type: '',
+      steps: []
+    };
+
+    newWorkflow.name = data['workflowName'];
+    newWorkflow.description = data['workflowDescription'];
+    // newWorkflow.type = data['workflowType'];
+
+    data['steps'].forEach(
+      step => {
+        var newStep = {
+          title: '',
+          description: '',
+          apiCall: '',
+          deviceAccount: '',
+          headers: [],
+          variables: [],
+          body: [],
+          query: []
+        };
+
+        newStep.title = step['stepTitle'];
+        // newStep.description = step['stepDescription'];
+        newStep.deviceAccount = step['stepAccount'];
+        newStep.apiCall = step['stepAPI'];
+
+        step['headers'].forEach(
+          header => {
+            var newHeader = {};
+            newHeader[header['name']] = header['value'];
+            newStep.headers.push(newHeader);
+          });
+        step['params'].forEach(
+          param => {
+            if(param['paramType'] == 'body') {
+              var newBody = {};
+              newBody[param['name']] = param['value'];
+              newStep.body.push(newBody);
+            }
+
+            if(param['paramType'] == 'query') {
+              var newQuery = {};
+              newQuery[param['name']] = param['value'];
+              newStep.query.push(newQuery);
+            }
+          });
+        step['variables'].forEach(
+          variable => {
+            var newVariable = {};
+            newVariable[variable['name']] = variable['value'];
+            newStep.variables.push(newVariable);
+          });
+
+        newWorkflow.steps.push(newStep);
+      });
+
+      console.log(newWorkflow);
+      this.caneService.createWorkflow(newWorkflow).subscribe(
+        res => {
+          console.log(res);
+        },
+        error => {
+          console.log(error);
+        });
   }
 
   executeRequest() {

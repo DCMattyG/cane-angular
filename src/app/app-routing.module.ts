@@ -8,7 +8,7 @@ import { JobComponent } from './job/job.component';
 import { WorkflowNewComponent } from './workflow-new/workflow-new.component';
 import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './auth/auth.guard';
-import { JobdetailsComponent } from './jobdetails/jobdetails.component';
+import { JobdetailComponent } from './job-detail/job-detail.component';
 import { ProfileComponent } from './profile/profile.component';
 
 const routes: Routes = [
@@ -59,7 +59,7 @@ const routes: Routes = [
   },
   {
     path: 'job/:jobid',
-    component: JobdetailsComponent,
+    component: JobdetailComponent,
     pathMatch: 'full',
     canActivate: [AuthGuard]
   },
