@@ -27,8 +27,8 @@ export class CodeEditorComponent implements OnInit, AfterViewInit {
 
     const editorOptions: Partial<ace.Ace.EditorOptions> = {
         highlightActiveLine: true,
-        minLines: this.size || 20,
-        maxLines: this.size || 20,
+        // minLines: this.size || 20,
+        // maxLines: this.size || 20,
     };
 
     this.codeEditor = ace.edit(element, editorOptions);

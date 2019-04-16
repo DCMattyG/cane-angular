@@ -12,7 +12,7 @@
         <tbody>
           <tr *ngFor="let claim of jobs">
             <td><a [routerLink]="['/job/' + claim.claimCode]">{{ claim.claimCode }}</a></td>
-            <td>{{ claim.timestamp }}</td>
+            <td>{{ claim.timestamp | date:'medium' }}</td>
             <td>{{ statusMap[claim.currentStatus] }}</td>
           </tr>
         </tbody>

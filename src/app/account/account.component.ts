@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators, FormControl } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { CaneService } from '../cane/cane.service';
 
@@ -18,11 +18,10 @@ interface Account {
   templateUrl: './account.component.html',
   styleUrls: ['./account.component.scss']
 })
-export class AccountComponent {
-  accounts: Account[];
+export class AccountComponent implements OnInit {
+  accounts: Account[] = [];
   baseUrl = environment.baseUrl;
   newAccount = false;
-  auth = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJjbGllbnQiOiIgIiwidGltZSI6MTU0Nzc5ODY5Mn0.ticg5h9271elVkjQBGrNn7tw3QMlVBw-ysgWx2Bcgsg';
 
   accountForm = this.fb.group({
     name: ['', [Validators.required, this.noWhitespaceValidator]],
@@ -42,46 +41,68 @@ export class AccountComponent {
     })
   });
 
-  constructor(private caneService: CaneService, private http:HttpClient, private fb: FormBuilder) { 
-    this.getAccounts();
-    this.accounts = [];
-  }
+  constructor(private caneService: CaneService,
+    private http:HttpClient,
+    private fb: FormBuilder) { }
 
   deleteAccount(accountName: string) {
     this.caneService.deleteAccount(accountName)
     .subscribe(
       res => {
         console.log(res);
-        this.getAccounts();
+        this.refreshAccounts();
     });
   }
 
-  getAccounts() {
-    this.accounts = [];
-    this.caneService.getAccount()
-    .subscribe(
-      res => {
-        console.log(res);
-        if(res) {
-          res['devices'].forEach(
-            element => {
-              this.getAccountDetail(element);
-          });
-        }
-    });
-  }
+  refreshAccounts() { 
+    this.accounts = []; 
 
-  getAccountDetail(accountName: string) {
-    this.caneService.getAccountDetail(accountName)
-    .subscribe((res) => {
-      console.log(res);
-      res['status'] = "1";
-      res['endpoint'] = this.baseUrl + "/" + accountName;
-      delete res['authObj'];
-      console.log(res);
-      this.accounts.push(<Account>res);
-    });
-  }
+    this.caneService.getAccount().toPromise() 
+    .then( 
+      (res: any[]) => { 
+        if(res && res['devices'].length > 0) { 
+          res['devices'].forEach( 
+            account => { 
+              this.caneService.getAccountDetail(account).toPromise() 
+              .then((res) => { 
+                if(res) { 
+                  res['status'] = "1"; 
+                  res['endpoint'] = this.baseUrl + "/" + account; 
+                  delete res['authObj']; 
+                  this.accounts.push(<Account>res); 
+                }
+            }); 
+          }); 
+        } 
+    }); 
+  } 
+
+  // getAccounts() {
+  //   this.accounts = [];
+  //   this.caneService.getAccount()
+  //   .subscribe(
+  //     (res: any[]) => {
+  //       console.log(res);
+  //       if(res && res.length > 0) {
+  //         res['devices'].forEach(
+  //           element => {
+  //             this.getAccountDetail(element);
+  //         });
+  //       }
+  //   });
+  // }
+
+  // getAccountDetail(accountName: string) {
+  //   this.caneService.getAccountDetail(accountName)
+  //   .subscribe((res) => {
+  //     console.log(res);
+  //     res['status'] = "1";
+  //     res['endpoint'] = this.baseUrl + "/" + accountName;
+  //     delete res['authObj'];
+  //     console.log(res);
+  //     this.accounts.push(<Account>res);
+  //   });
+  // }
 
   resetModal() {
     this.accountForm.reset();   
@@ -132,7 +153,7 @@ export class AccountComponent {
     .subscribe(data  => {
       console.log("POST Request is successful ", data);
       this.closeModal();
-      this.getAccounts();
+      this.refreshAccounts();
     },
     error  => {
       console.log("Error", error);
@@ -144,5 +165,9 @@ export class AccountComponent {
     const isWhitespace = (control.value || '').trim().length === 0;
     const isValid = !isWhitespace;
     return isValid ? null : { 'whitespace': true };
+  }
+
+  ngOnInit() {
+    this.refreshAccounts()
   }
 }

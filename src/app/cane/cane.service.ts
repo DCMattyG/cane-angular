@@ -14,7 +14,7 @@ export class CaneService {
   constructor(private http:HttpClient) { }
 
   createAccount(data) {
-    return this.http.post(this.baseUrl + '/api', JSON.stringify(data), { headers: this.headers })
+    return this.http.post(this.baseUrl + '/device', JSON.stringify(data), { headers: this.headers })
   }
 
   getAccount() {
@@ -27,6 +27,10 @@ export class CaneService {
 
   deleteAccount(account: string) {
     return this.http.delete(this.baseUrl + '/device/' + account, { headers: this.headers })
+  }
+
+  createApi(data) {
+    return this.http.post(this.baseUrl + '/api', JSON.stringify(data), { headers: this.headers })
   }
 
   getApi(account: string) {

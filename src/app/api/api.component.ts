@@ -59,29 +59,31 @@ export class ApiComponent implements OnInit{
     this.accounts = [];
 
     this.caneService.getAccount().toPromise()
-    .then((res) => {
-      res['devices'].forEach((account) => {
-        this.caneService.getApi(account).toPromise()
-        .then((res) => {
-          if(res) {
-            res['apis'].forEach((api) => {
-              this.caneService.getApiDetail(account, api).toPromise()
-              .then((res: ApiDetail) => {
-                let thisAccount: Api;
-      
-                thisAccount = {
-                  name: account,
-                  apiCall: res
-                };
-  
-                this.apis.push(thisAccount);
-              })
-            });
-          }
-        });
+    .then((res: any[]) => {
+      if(res && res.length > 0) {
+        res['devices'].forEach((account) => {
+          this.caneService.getApi(account).toPromise()
+          .then((res) => {
+            if(res) {
+              res['apis'].forEach((api) => {
+                this.caneService.getApiDetail(account, api).toPromise()
+                .then((res: ApiDetail) => {
+                  let thisAccount: Api;
+        
+                  thisAccount = {
+                    name: account,
+                    apiCall: res
+                  };
+    
+                  this.apis.push(thisAccount);
+                })
+              });
+            }
+          });
 
-        this.accounts.push(account);
-      });
+          this.accounts.push(account);
+        });
+      }
     });
   }
 
@@ -97,7 +99,7 @@ export class ApiComponent implements OnInit{
   onSubmit() {
     let data = this.newApiForm.value;
     
-    this.caneService.createAccount(data)
+    this.caneService.createApi(data)
     .subscribe(
       data  => {
         console.log("POST Request Success: ", data);

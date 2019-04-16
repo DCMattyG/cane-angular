@@ -12,7 +12,7 @@
           </tr>
           <tr>
             <td>{{ job.claimCode }}</td>
-            <td>{{ job.timestamp }}</td>
+            <td>{{ job.timestamp | date:'medium' }}</td>
             <td>{{ statusMap[job.currentStatus] }}</td>
           </tr>
         </table>
