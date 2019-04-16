@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit, Output, EventEmitter, Input, AfterViewInit } from '@angular/core';
 
 import * as ace from 'ace-builds';
 import 'ace-builds/src-noconflict/mode-javascript';
@@ -13,7 +13,7 @@ const LANG = 'ace/mode/javascript';
   templateUrl: './code-editor.component.html',
   styleUrls: ['./code-editor.component.scss']
 })
-export class CodeEditorComponent implements OnInit{
+export class CodeEditorComponent implements OnInit, AfterViewInit {
   @ViewChild('codeEditor') codeEditorElmRef: ElementRef;
   // @Output() editorData: EventEmitter<any> = new EventEmitter<any>();
   @Input() id: number;
@@ -35,5 +35,10 @@ export class CodeEditorComponent implements OnInit{
     this.codeEditor.setTheme(THEME);
     this.codeEditor.getSession().setMode(LANG);
     this.codeEditor.setShowFoldWidgets(true);
+  }
+
+  ngAfterViewInit() {
+    this.codeEditor.container.style.height = "200px";
+    this.codeEditor.resize();
   }
 }

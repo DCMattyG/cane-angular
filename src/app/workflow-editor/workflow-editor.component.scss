@@ -38,12 +38,15 @@
 }
 
 .editor-ide {
+  height: 200px;
+  overflow: hidden;
   border-color: #dfdfdf;
   border: 1px solid;
   margin: 0px 10px 10px 10px;
 }
 
 .editor-ide-query {
+  // height: 25px;
   border-color: #dfdfdf;
   border: 1px solid;
   margin: 0px 10px 0px 10px;
@@ -209,4 +212,9 @@ input.ng-dirty.ng-invalid {
   bottom: 0;
   right: 0;
   left: 0;
+}
+
+#requestEditor {
+  width: 100%;
+  height: 100%;
 }

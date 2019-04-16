@@ -41,6 +41,14 @@ export class CaneService {
     return this.http.delete(this.baseUrl + '/api/' + account + '/' + api, { headers: this.headers })
   }
 
+  getWorkflow() {
+    return this.http.get(this.baseUrl + '/workflow', { headers: this.headers })
+  }
+
+  getWorkflowDetail(workflow: string) {
+    return this.http.get(this.baseUrl + '/workflow/' + workflow, { headers: this.headers })
+  }
+
   createWorkflow(data) {
     return this.http.post(this.baseUrl + '/workflow', JSON.stringify(data), { headers: this.headers })
   }
@@ -48,7 +56,7 @@ export class CaneService {
   getClaim() {
     return this.http.get(this.baseUrl + '/claim', { headers: this.headers })
   }
-  
+
   getClaimDetail(claim: string) {
     return this.http.get(this.baseUrl + '/claim/' + claim, { headers: this.headers })
   }
