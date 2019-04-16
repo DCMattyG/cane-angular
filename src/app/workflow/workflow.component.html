@@ -4,25 +4,29 @@
       <a class="btn btn--primary" [routerLink]="['/workflow/new']">New Workflow</a><br><br>
       <div class="panel panel--bordered panel--bordered">
         <table class="table">
-          <tr>
-            <th>Endpoint Name</th>
-            <th>Category</th>
-            <th>Description</th>
-            <th></th>
-            <th></th>
-          </tr>
-          <tr *ngFor="let workflow of workflows">
-            <td><a href="#">{{ workflow.name }}</a></td>
-            <td>{{ workflow.type }}</td>
-            <td>{{ workflow.description }}</td>
-            <td><button ng-click="openStartFlowModal(workflow.name)" class="btn btn--small btn--icon btn--success"><span
-                  class="icon icon-play"></span></button></td>
-            <td style="text-align: right;">
-              <button ng-click="deleteWorkflow(workflow.name)" class="btn btn--small btn--icon btn--negative">
-                <span class="icon icon-trash"></span>
-              </button>
-            </td>
-          </tr>
+          <thead>
+            <tr>
+              <th>Endpoint Name</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let workflow of workflows">
+              <td><a href="#">{{ workflow.name }}</a></td>
+              <td>{{ workflow.type }}</td>
+              <td>{{ workflow.description }}</td>
+              <td><button ng-click="openStartFlowModal(workflow.name)"
+                  class="btn btn--small btn--icon btn--success"><span class="icon icon-play"></span></button></td>
+              <td style="text-align: right;">
+                <button ng-click="deleteWorkflow(workflow.name)" class="btn btn--small btn--icon btn--negative">
+                  <span class="icon icon-trash"></span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>

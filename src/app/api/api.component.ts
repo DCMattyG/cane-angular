@@ -60,7 +60,7 @@ export class ApiComponent implements OnInit{
 
     this.caneService.getAccount().toPromise()
     .then((res: any[]) => {
-      if(res && res.length > 0) {
+      if(res && res['devices'].length > 0) {
         res['devices'].forEach((account) => {
           this.caneService.getApi(account).toPromise()
           .then((res) => {
