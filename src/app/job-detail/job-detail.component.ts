@@ -60,10 +60,17 @@ export class JobdetailComponent implements OnInit {
         let i = 1;
         for (let entry of Object.keys(disobj)) {
           let result: workflowResult = disobj[entry];
-          let reqJson = JSON.parse(result.reqBody);
-          let resJson = JSON.parse(result.resBody);
-          result['reqBody'] = reqJson;
-          result['resBody'] = resJson;
+
+          try {
+            result['resBody'] = JSON.parse(result['resBody']);
+          } catch (e) {
+            if (e instanceof SyntaxError) {
+              result['resBody'] = JSON.parse("{}");
+            } else {
+                console.log(e);
+            }
+          }
+
           result['step'] = i;
           tempArray.push(result);
           i++;

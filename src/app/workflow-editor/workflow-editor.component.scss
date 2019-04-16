@@ -166,6 +166,7 @@ select:focus {
 input[type=text] {
   width: 100%;
   outline: none;
+  border: none;
   -o-text-overflow: ellipsis;
   -ms-text-overflow: ellipsis;
   text-overflow: ellipsis;
