@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from './auth/auth.service';
-import { ErrorService } from './error/error.service';
+import { MessageService } from './message/message.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -15,7 +15,7 @@ export class AppComponent {
 
   constructor(
     private authService: AuthService,
-    private errorService: ErrorService,
+    private messageService: MessageService,
     private router: Router) { }
 
   toggleMenu() {

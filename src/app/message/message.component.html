@@ -1,0 +1,21 @@
+<div class="message-stack">
+  <div [@slideInOut] class="toast" *ngFor="let message of messages; index as i">
+      <ng-container *ngIf="message.type == 'success'">
+        <div class="toast__icon text-success icon-check-outline" style="margin-right: auto;"></div>
+      </ng-container>
+      <ng-container *ngIf="message.type == 'info'">
+        <div class="toast__icon text-info icon-info-outline" style="margin-right: auto;"></div>
+      </ng-container>
+      <ng-container *ngIf="message.type == 'warning'">
+        <div class="toast__icon text-warning icon-warning-outline" style="margin-right: auto;"></div>
+      </ng-container>
+      <ng-container *ngIf="message.type == 'error'">
+        <div class="toast__icon text-danger icon-error-outline" style="margin-right: auto;"></div>
+      </ng-container>
+      <div class="toast__body">
+          <div class="toast__title">{{ message.title }}</div>
+          <div class="toast__message">{{ message.body }}</div>
+      </div>
+      <div class="toast__icon icon-close message-close" (click)="removeMessage(i)" style="margin-left: auto;"></div>
+  </div>
+</div>

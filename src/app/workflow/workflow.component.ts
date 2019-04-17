@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { ErrorService } from '../error/error.service';
+import { MessageService } from '../message/message.service';
 import { CaneService } from '../cane/cane.service';
 
 interface Workflow {
@@ -20,7 +20,7 @@ export class WorkflowComponent {
   workflows: Workflow[] =[];
 
   constructor(private http: HttpClient,
-    private errorService: ErrorService,
+    private errorService: MessageService,
     private caneService: CaneService) {
     this.getCaneWorkflow();
   }

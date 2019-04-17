@@ -1,11 +1,11 @@
 import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
-import { ErrorService } from '../error/error.service';
+import { MessageService } from './message.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
 @Component({
-  selector: 'app-error',
-  templateUrl: './error.component.html',
-  styleUrls: ['./error.component.scss'],
+  selector: 'app-message',
+  templateUrl: './message.component.html',
+  styleUrls: ['./message.component.scss'],
   animations: [
     trigger('slideInOut', [
       transition(':enter', [
@@ -18,23 +18,23 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
     ])
   ]
 })
-export class ErrorComponent implements OnInit {
-  errors = [];
+export class MessageComponent implements OnInit {
+  messages = [];
 
-  constructor(private error: ErrorService, private changeDetector: ChangeDetectorRef) { }
+  constructor(private error: MessageService, private changeDetector: ChangeDetectorRef) { }
 
-  getErrors() {
-    this.error.getErrors()
-    .subscribe(errors => this.errors = errors);
+  getMessages() {
+    this.error.getMessages()
+    .subscribe(messages => this.messages = messages);
   }
 
-  removeError(index: number) {
-    this.error.removeError(index);
-    this.getErrors();
+  removeMessage(index: number) {
+    this.error.removeMessage(index);
+    this.getMessages();
     this.changeDetector.detectChanges();
   }
 
   ngOnInit() {
-    this.getErrors();
+    this.getMessages();
   }
 }

@@ -14,7 +14,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { WorkflowEditorComponent } from './workflow-editor/workflow-editor.component';
 import { CodeEditorComponent } from './code-editor/code-editor.component';
 import { WorkflowNewComponent } from './workflow-new/workflow-new.component';
-import { ErrorComponent } from './error/error.component';
+import { MessageComponent } from './message/message.component';
 import { LoginComponent } from './login/login.component';
 import { JobdetailComponent } from './job-detail/job-detail.component';
 import { ProfileComponent } from './profile/profile.component';
@@ -31,7 +31,7 @@ import { ClipboardModule } from 'ngx-clipboard';
     WorkflowEditorComponent,
     CodeEditorComponent,
     WorkflowNewComponent,
-    ErrorComponent,
+    MessageComponent,
     LoginComponent,
     JobdetailComponent,
     ProfileComponent

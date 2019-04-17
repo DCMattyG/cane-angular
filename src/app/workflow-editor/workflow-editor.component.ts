@@ -6,7 +6,7 @@ import { CodeEditorComponent } from '../code-editor/code-editor.component';
 import * as dot from 'dot-object';
 import { CaneService } from '../cane/cane.service';
 import { Observable } from 'rxjs';
-import { ErrorService } from '../error/error.service';
+import { MessageService } from '../message/message.service';
 
 const VALID_NAME = /^(\$*[a-zA-Z]+)(\.(([a-zA-Z]+)|(\d+\.[a-zA-Z]+)))*(\.\d+)?$/;
 
@@ -73,7 +73,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     private _fb: FormBuilder,
     private changeDetector: ChangeDetectorRef,
     private caneService: CaneService,
-    private errorService: ErrorService) { }
+    private messageService: MessageService) { }
 
   ngAfterViewInit() {
     this.changeDetector.detectChanges();
@@ -839,7 +839,7 @@ type Step struct {
         },
         error => {
           console.log(error);
-          this.errorService.newError(error['statusText'], error['error']['message']);
+          this.messageService.newMessage('error', error['statusText'], error['error']['message']);
         });
   }
 
