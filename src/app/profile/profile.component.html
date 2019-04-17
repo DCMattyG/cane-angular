@@ -1,7 +1,36 @@
 <div class="content">
   <div class="container">
       <div class="section">
-          User Profile
+          <h1>User Profile</h1>
+          <br>
+
+          <div class="panel panel--bordered panel--raised-small ">
+            <table class='table table--nostripes '>
+              <tr>
+                <th>First Name</th>
+                <td>{{ user.fname }}</td>
+              </tr>
+              <tr>
+                  <th>Last Name</th>
+                  <td>{{ user.lname }}</td>
+                </tr>
+                <tr>
+                    <th>Username</th>
+                    <td>{{ user.username }}</td>
+                  </tr>
+                <tr>
+                    <th>CANE JWT</th>
+                    <td>{{ user.token }}
+                        &nbsp;
+                       <button class='btn btn--icon btn--success' ngxClipboard [cbContent]=" user.token " (cbOnSuccess)="copied($event)" >
+                         <span class='icon-recent-apps'></span>
+                       </button>
+                      </td>
+                  </tr>
+
+            </table>
+          </div>
+          
       </div>
   </div>
 </div>

@@ -122,3 +122,11 @@ export interface Job {
   timestamp: string;
   results: workflowResult[];
 }
+
+// CANE User Interface
+export interface CaneUser {
+	fname: string;
+	lname: string;
+	username: string;
+	token: string;
+  }
