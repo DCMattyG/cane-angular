@@ -24,6 +24,7 @@ interface Api {
 export class ApiComponent implements OnInit{
   newApi = false;
   showMessage = false;
+  modalFunction = 'new';
   apis: Api[] = [];
   accounts = [];
   messageTitle = "";
@@ -48,8 +49,7 @@ export class ApiComponent implements OnInit{
     deviceAccount: ['', Validators.required],
     type: ['', Validators.required],
     method: ['', Validators.required],
-    path: ['', [Validators.required, this.noWhitespaceValidator]],
-    body: [''],
+    path: ['', [Validators.required, this.noWhitespaceValidator]]
   });
 
   constructor(private caneService: CaneService, private http:HttpClient, private fb: FormBuilder) {}
@@ -99,18 +99,39 @@ export class ApiComponent implements OnInit{
   onSubmit() {
     let data = this.newApiForm.value;
     
-    this.caneService.createApi(data)
-    .subscribe(
-      data  => {
-        console.log("POST Request Success: ", data);
-        this.closeModal();
-        this.refreshApis();
-      },
-      error  => {
-        console.log("Error: ", error);
-        console.log(data);
-      }
-    );
+    if(this.modalFunction == 'new') {
+      this.caneService.createApi(data)
+      .subscribe(
+        data  => {
+          console.log("POST Request Success: ", data);
+          this.closeModal();
+          this.refreshApis();
+        },
+        error  => {
+          console.log("Error: ", error);
+          console.log(data);
+        }
+      );
+    } else if (this.modalFunction == 'edit') {
+      let api = data['name'];
+      let account = data['deviceAccount'];
+
+      console.log("API: " + api);
+      console.log("ACCOUNT: " + account);
+
+      delete data['name'];
+      delete data['deviceAccount'];
+
+      console.log(data);
+
+      this.caneService.updateApi(account, api, data)
+      .subscribe(
+        res => {
+          console.log(res);
+          this.closeModal();
+          this.refreshApis();
+        });
+    }
   }
 
   openModal() {
@@ -120,6 +141,32 @@ export class ApiComponent implements OnInit{
   closeModal() {
     this.newApi = false;
     this.newApiForm.reset();
+  }
+
+  addApi() {
+    this.modalFunction = 'new';
+    this.openModal();
+  }
+
+  editApi(account: string, api: string) {
+    console.log(account);
+    console.log(api);
+    this.modalFunction = 'edit';
+
+    this.caneService.getApiDetail(account, api).toPromise()
+    .then((res: ApiDetail) => {
+      console.log(res);
+
+      this.newApiForm.patchValue({
+        name: res['name'],
+        deviceAccount: res['deviceAccount'],
+        type: res['type'].toUpperCase(),
+        method: res['method'],
+        path: res['path']
+      });
+    });
+
+    this.openModal();
   }
 
   // TODO this does not check for spaces inside

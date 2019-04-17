@@ -83,7 +83,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     this.initTracker();
 
     this.workflowEditor = this._fb.group({
-      workflowName: ['NewWorkflow'],
+      workflowName: ['newWorkflow'],
       workflowDescription: ['New Workflow...'],
       steps: this._fb.array([
           // this.initSteps(),

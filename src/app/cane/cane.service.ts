@@ -11,7 +11,9 @@ export class CaneService {
   private auth = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJjbGllbnQiOiIgIiwidGltZSI6MTU0Nzc5ODY5Mn0.ticg5h9271elVkjQBGrNn7tw3QMlVBw-ysgWx2Bcgsg';
   private headers = new HttpHeaders().set('Authorization', this.auth);
 
-  constructor(private http:HttpClient) { }
+  constructor(private http:HttpClient) {
+    this.headers.set('Access-Control-Allow-Methods', "GET, POST, PATCH, DELETE, OPTIONS");
+  }
 
   createAccount(data) {
     return this.http.post(this.baseUrl + '/device', JSON.stringify(data), { headers: this.headers })
@@ -35,6 +37,10 @@ export class CaneService {
 
   getApi(account: string) {
     return this.http.get(this.baseUrl + '/api/' + account, { headers: this.headers })
+  }
+
+  updateApi(account: string, api: string, data: any) {
+    return this.http.patch(this.baseUrl + '/api/' + account + '/' + api, JSON.stringify(data), { headers: this.headers })
   }
 
   getApiDetail(account: string, api: string) {

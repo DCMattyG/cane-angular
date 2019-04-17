@@ -1,9 +1,5 @@
 import { Component } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
-
-import { throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { ErrorService } from '../error/error.service';
 import { CaneService } from '../cane/cane.service';
 
@@ -31,6 +27,17 @@ export class WorkflowComponent {
 
   getCaneWorkflow() {
     this.caneService.getWorkflow()
+    .subscribe(res => {
+      res['workflows'].forEach(element => {
+        this.getCaneWorkflowDetail(element);
+      });
+    });
+  }
+
+  /*
+  import { throwError } from 'rxjs';
+  import { catchError } from 'rxjs/operators';
+
     .pipe(
       catchError(err => {
         console.log("Caught:");
@@ -40,19 +47,12 @@ export class WorkflowComponent {
         this.errorService.newError(err.statusText, err.message);
         return throwError("Error thrown from catchError");
       })
-    ).subscribe(res => {
-      // console.log(res);
-
-      res['workflows'].forEach(element => {
-        this.getCaneWorkflowDetail(element);
-      });
-    });
-  }
+    )
+  */
 
   getCaneWorkflowDetail(wfName) {
     this.caneService.getWorkflowDetail(wfName)
     .subscribe((res : Workflow)=>{
-      // console.log(res);
       this.workflows.push(res);
     });
   }

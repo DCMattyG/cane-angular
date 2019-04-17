@@ -1,7 +1,7 @@
 <div class="content" style="height:100%">
   <div class="container">
     <div class="section">
-      <a class="btn btn--primary" (click)="openModal()">Add API</a>
+      <a class="btn btn--primary" (click)="addApi()">Add API</a>
       <br>
       <br>
       <div class="alert alert--warning" style="margin: 15px 0;" *ngIf="showMessage">
@@ -24,7 +24,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let api of apis">
-              <td>{{ api.name }}</td>
+              <td><a (click)="editApi(api.name, api.apiCall.name)">{{ api.name }}</a></td>
               <td>{{ api.apiCall.name  }}</td>
               <td>{{ api.apiCall.method }}</td>
               <td>{{ api.apiCall.path }}</td>
@@ -42,62 +42,64 @@
   </div>
 </div>
 
-<div class="modal modal--large" id="modal-large" *ngIf="newApi == true">
+<div class="modal modal--small" id="modal-small" *ngIf="newApi == true">
   <form [formGroup]="newApiForm" (ngSubmit)="onSubmit()">
     <div class="modal__dialog">
       <div class="modal__content">
         <a class="modal__close" (click)="closeModal()"><span class="icon-close"></span></a>
         <div class="modal__header">
-          <h1 class="modal__title">New API</h1>
+          <h1 class="modal__title">{{ modalFunction == 'new' ? 'New API' : 'Edit API' }}</h1>
         </div>
         <div class="modal__body">
           <div class="panel">
             <div class="row">
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="form-group">
                   <div class="form-group__text">
-                    <input type="text" formControlName="name">
+                    <input type="text" formControlName="name" [ngClass]="{'disabled': modalFunction == 'edit'}"/>
                     <label for="input-layout-default">Name</label>
                   </div>
                 </div>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="form-group">
                   <div class="form-group__text select">
-                    <select formControlName="deviceAccount">
+                    <select formControlName="deviceAccount" [ngClass]="{'disabled': modalFunction == 'edit'}">
                       <option *ngFor="let account of accounts" [value]="account">{{ account }}</option>
                     </select>
                     <label for="select-size-default">Device</label>
                   </div>
                 </div>
               </div>
-              <div class="col-md-4">
+            </div>
+            <div class="row">
+              <div class="col-md-6">
                 <div class="form-group">
                   <div class="form-group__text select">
                     <select formControlName="type">
                       <option *ngFor="let typeOption of typeList" [value]="typeOption">{{ typeOption }}</option>
                     </select>
-                    <label for="select-size-default">Type</label>
+                    <label class="label-padding" for="select-size-default">Type</label>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="form-group">
                   <div class="form-group__text select">
                     <select formControlName="method">
                       <option *ngFor="let methodOption of methodList" [value]="methodOption">{{ methodOption }}</option>
                     </select>
-                    <label for="select-size-default">Method</label>
+                    <label class="label-padding" for="select-size-default">Method</label>
                   </div>
                 </div>
               </div>
-              <div class="col-md-8">
+            </div>
+            <div class="row">
+              <div class="col-md-12">
                 <div class="form-group">
                   <div class="form-group__text">
-                    <input type="text" formControlName="path">
-                    <label for="input-uri">API Endpoint</label>
+                    <input type="text" formControlName="path"/>
+                    <label class="label-padding" for="input-uri">API Endpoint</label>
                   </div>
                 </div>
               </div>
@@ -105,7 +107,7 @@
           </div>
         </div>
         <div class="modal__footer">
-          <button type="submit" [disabled]="!newApiForm.valid" class="btn btn--success">Submit</button>
+          <button type="submit" [disabled]="!newApiForm.valid" class="btn btn--success">{{ modalFunction == 'new' ? 'Submit' : 'Update' }}</button>
           <button type="button" class="btn btn-negative" (click)="closeModal()">Cancel</button>
         </div>
       </div>
