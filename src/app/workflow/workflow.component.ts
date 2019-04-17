@@ -56,4 +56,8 @@ export class WorkflowComponent {
       this.workflows.push(res);
     });
   }
+
+  executeWorkflow(name: string) {
+    console.log("Executing Workflow: " + name);
+  }
 }
