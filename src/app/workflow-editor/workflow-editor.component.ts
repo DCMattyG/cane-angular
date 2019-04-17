@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import { MessageService } from '../message/message.service';
 
 const VALID_NAME = /^(\$*[a-zA-Z]+)(\.(([a-zA-Z]+)|(\d+\.[a-zA-Z]+)))*(\.\d+)?$/;
+const VALID_QUERY = /^(([$]*[\w-]+(=[\w-]+))?(&[$]*[\w-]+(=[\w-' ]+))*)?$/;
 
 @Component({
   selector: 'app-workflow-editor',
@@ -128,13 +129,13 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
       stepVerb: [verb],
       selected: [false],
       params: this._fb.array([
-        this.initParam(),
+        // this.initParam(),
       ]),
       headers: this._fb.array([
-        this.initHeader(),
+        // this.initHeader(),
       ]),
       variables: this._fb.array([
-        this.initVariable(),
+        // this.initVariable(),
       ])
     });
   }
@@ -620,6 +621,20 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     }
   }
 
+  queryErrors(index: number) {
+    var regex = new RegExp(VALID_QUERY);
+    
+    if(this.queryEditors) {
+      var selectedEditor = this.queryEditors.find(query => query.nativeElement.id == index.toString());
+
+      if(selectedEditor) {
+        var queryValue = selectedEditor.nativeElement.value;
+
+        return regex.test(queryValue);
+      }
+    }
+  }
+
   openModal(target: string) {
     if(target == 'add') {
       this.newEditor = true;
@@ -845,5 +860,9 @@ type Step struct {
 
   executeRequest() {
     console.log("Executing Request!");
+  }
+
+  detectChanges() {
+    this.changeDetector.detectChanges();
   }
 }

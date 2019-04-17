@@ -81,7 +81,7 @@
                         <div class="editor-button-raw" [ngClass]="{'hide' : stateTracker.steps[i].requestWindow != 'raw'}">
                           <button type="button" class="btn btn--icon btn--small btn--secondary editor-button-action" (click)="editorUndo(i)"><span class="icon-redial"></span></button>
                           <button type="button" class="btn btn--icon btn--small btn--secondary editor-button-action" (click)="editorRedo(i)"><span class="icon-refresh"></span></button>
-                          <button type="button" class="btn btn--icon btn--small btn--success editor-button-action" (click)="updateRequest(i)" [ngClass]="{'disabled' : editorErrors(i) != 0}">
+                          <button type="button" class="btn btn--icon btn--small btn--success editor-button-action" (click)="updateRequest(i)" [ngClass]="{'disabled' : editorErrors(i) != 0 || !queryErrors(i)}">
                             <span class="icon-check"></span>
                           </button>
                         </div>
@@ -149,7 +149,7 @@
                             <app-code-editor #requestEditor [size]="17" [id]="i"></app-code-editor>
                           </div>
                           <div class="editor-ide-query">
-                            <input #queryEditor spellcheck="false" type="text" [id]="i">
+                            <input #queryEditor (keyup)="detectChanges()" spellcheck="false" type="text" [id]="i">
                           </div>
                         </div>
                       </div>
