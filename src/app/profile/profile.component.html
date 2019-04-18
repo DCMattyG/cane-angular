@@ -22,7 +22,7 @@
               <th>CANE JWT</th>
               <td>
                 <input class="jwt-input" type="text" value="{{ user.token }}" readonly/>
-                <button class="btn btn--icon btn--success btn--small" ngxClipboard [cbContent]="user.token" (cbOnSuccess)="copied($event)">
+                <button class="btn btn--icon btn--success btn--small" ngxClipboard [cbContent]="user.token" (cbOnSuccess)="copySuccess()">
                   <span class="icon-recent-apps"></span>
                 </button>
               </td>

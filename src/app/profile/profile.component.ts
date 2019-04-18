@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {CaneUser } from '../cane/cane';
-import { CaneService } from '../cane/cane.service';
+import { CaneUser } from '../cane/cane';
 import { ClipboardService } from 'ngx-clipboard';
 import { MessageService } from '../message/message.service';
 
@@ -11,10 +10,15 @@ import { MessageService } from '../message/message.service';
 })
 
 export class ProfileComponent implements OnInit {
-
   user: CaneUser;
 
-  constructor(    private messageService: MessageService    ) { 
+  constructor(private messageService: MessageService) { }
+
+  copySuccess() {
+    this.messageService.newMessage('success', 'Copied', 'JWT Copied to Clipboard');
+  }
+
+  ngOnInit() {
     var tempUser = JSON.parse(localStorage.getItem('currentUser'));
 
     this.user = {
@@ -23,17 +27,5 @@ export class ProfileComponent implements OnInit {
       token: tempUser['token'],
       username: tempUser['username']
     }
-
-    console.log(this.user);
-  }
-
-  ngOnInit() {
-  }
-
-  copied(event: string) {
-    console.log('copied text');
-    console.log(event);
-    this.messageService.newMessage('success', 'Success', 'JWT Copied to Clipboard');
-
   }
 }
