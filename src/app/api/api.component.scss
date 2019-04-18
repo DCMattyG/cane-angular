@@ -1,3 +1,14 @@
 .label-padding {
   padding-top: 10px;
 }
+
+.modal__dialog {
+  display: inline-block;
+  position: fixed;
+  margin: auto;
+  height: 550px;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}

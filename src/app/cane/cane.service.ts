@@ -59,8 +59,12 @@ export class CaneService {
     return this.http.get(this.baseUrl + '/workflow/' + workflow, { headers: this.headers })
   }
 
-  createWorkflow(data) {
+  createWorkflow(data: any) {
     return this.http.post(this.baseUrl + '/workflow', JSON.stringify(data), { headers: this.headers })
+  }
+
+  updateWorkflow(workflow: string, data: any) {
+    return this.http.patch(this.baseUrl + '/workflow/' + workflow, JSON.stringify(data), { headers: this.headers })
   }
 
   getClaim() {

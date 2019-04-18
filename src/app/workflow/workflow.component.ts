@@ -26,6 +26,7 @@ export class WorkflowComponent {
     private workflowService: WorkflowService) {
     this.getCaneWorkflow();
     this.workflowService.currentOperation = '';
+    this.workflowService.targetWorkflow = '';
   }
 
   getCaneWorkflow() {
@@ -63,7 +64,7 @@ export class WorkflowComponent {
   updateWorkflow(target: string) {
     this.workflowService.updateWorkflow(target);
   }
-  
+
   executeWorkflow(name: string) {
     console.log("Executing Workflow: " + name);
   }

@@ -8,6 +8,7 @@ import { CaneService } from '../cane/cane.service';
 import { MessageService } from '../message/message.service';
 import { WorkflowService } from '../workflow/workflow.service';
 import { resolve } from 'q';
+import { Router } from '@angular/router';
 
 const VALID_NAME = /^(\$*[a-zA-Z]+)(\.(([a-zA-Z]+)|(\d+\.[a-zA-Z]+)))*(\.\d+)?$/;
 const VALID_QUERY = /^(([$]*[\w-]+(=[\w-]+))?(&[$]*[\w-]+(=[\w-' ]+))*)?$/;
@@ -76,7 +77,8 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     private changeDetector: ChangeDetectorRef,
     private caneService: CaneService,
     private messageService: MessageService,
-    private workflowService: WorkflowService) {
+    private workflowService: WorkflowService,
+    private router: Router) {
       if(this.workflowService.currentOperation == 'update') {
         console.log("Update Workflow...");
         this.loadWorkflow();
@@ -793,16 +795,31 @@ type Step struct {
       });
 
       console.log(newWorkflow);
-      // Add logic to "UPDATE" if flag is set here vs. "SAVE"...
-      this.caneService.createWorkflow(newWorkflow)
-      .subscribe(
-        res => {
-          console.log(res);
-        },
-        error => {
-          console.log(error);
-          this.messageService.newMessage('error', error['statusText'], error['error']['message']);
-        });
+      if(this.workflowService.currentOperation == 'update') {
+        this.caneService.updateWorkflow(this.workflowService.targetWorkflow, newWorkflow)
+        .subscribe(
+          res => {
+            console.log(res);
+            this.messageService.newMessage('success', 'Workflow Updated', `Workflow "${this.workflowService.targetWorkflow}" has been successfully updated!`);
+            this.router.navigate(['/workflow']);
+          },
+          error => {
+            console.log(error);
+            this.messageService.newMessage('error', error['statusText'], error['error']['message']);
+          });
+      } else {
+        this.caneService.createWorkflow(newWorkflow)
+        .subscribe(
+          res => {
+            console.log(res);
+            this.messageService.newMessage('success', 'Workflow Saved', `Workflow "${newWorkflow.name}" has been successfully saved!`);
+            this.router.navigate(['/workflow']);
+          },
+          error => {
+            console.log(error);
+            this.messageService.newMessage('error', error['statusText'], error['error']['message']);
+          });
+      }
   }
 
   varType(variable: any) {
