@@ -52,6 +52,12 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'workflow/update',
+    component: WorkflowNewComponent,
+    pathMatch: 'full',
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'job',
     component: JobComponent,
     pathMatch: 'full',

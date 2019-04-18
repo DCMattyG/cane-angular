@@ -19,6 +19,6 @@ export class WorkflowService {
   updateWorkflow(target: string) {
     this.currentOperation = 'update';
     this.targetWorkflow = target;
-    this.router.navigate(['/workflow/new']);
+    this.router.navigate(['/workflow/update']);
   }
 }

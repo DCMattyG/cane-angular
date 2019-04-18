@@ -79,8 +79,11 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     private messageService: MessageService,
     private workflowService: WorkflowService,
     private router: Router) {
+      if(this.router.url == '/workflow/update' && this.workflowService.currentOperation != 'update') {
+        this.router.navigate(['/workflow']);
+      }
+
       if(this.workflowService.currentOperation == 'update') {
-        console.log("Update Workflow...");
         this.loadWorkflow();
       }
     }
