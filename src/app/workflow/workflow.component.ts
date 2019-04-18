@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { MessageService } from '../message/message.service';
 import { CaneService } from '../cane/cane.service';
+import { WorkflowService } from './workflow.service';
 
 interface Workflow {
   description: string;
@@ -21,8 +22,10 @@ export class WorkflowComponent {
 
   constructor(private http: HttpClient,
     private errorService: MessageService,
-    private caneService: CaneService) {
+    private caneService: CaneService,
+    private workflowService: WorkflowService) {
     this.getCaneWorkflow();
+    this.workflowService.currentOperation = '';
   }
 
   getCaneWorkflow() {
@@ -57,6 +60,10 @@ export class WorkflowComponent {
     });
   }
 
+  updateWorkflow(target: string) {
+    this.workflowService.updateWorkflow(target);
+  }
+  
   executeWorkflow(name: string) {
     console.log("Executing Workflow: " + name);
   }

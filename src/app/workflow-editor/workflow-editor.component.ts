@@ -5,8 +5,9 @@ import { CodeEditorComponent } from '../code-editor/code-editor.component';
 
 import * as dot from 'dot-object';
 import { CaneService } from '../cane/cane.service';
-import { Observable } from 'rxjs';
 import { MessageService } from '../message/message.service';
+import { WorkflowService } from '../workflow/workflow.service';
+import { resolve } from 'q';
 
 const VALID_NAME = /^(\$*[a-zA-Z]+)(\.(([a-zA-Z]+)|(\d+\.[a-zA-Z]+)))*(\.\d+)?$/;
 const VALID_QUERY = /^(([$]*[\w-]+(=[\w-]+))?(&[$]*[\w-]+(=[\w-' ]+))*)?$/;
@@ -74,7 +75,13 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     private _fb: FormBuilder,
     private changeDetector: ChangeDetectorRef,
     private caneService: CaneService,
-    private messageService: MessageService) { }
+    private messageService: MessageService,
+    private workflowService: WorkflowService) {
+      if(this.workflowService.currentOperation == 'update') {
+        console.log("Update Workflow...");
+        this.loadWorkflow();
+      }
+    }
 
   ngAfterViewInit() {
     this.changeDetector.detectChanges();
@@ -140,33 +147,33 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     });
   }
 
-  initParam() {
+  initParam(name: string, value: string, paramType: string, fieldType: string) {
     return this._fb.group({
       selected: [false],
-      name: ['', Validators.pattern(VALID_NAME)],
-      value: [''],
-      paramType: [''],
-      fieldType: ['']
+      name: [name, Validators.pattern(VALID_NAME)],
+      value: [value],
+      paramType: [paramType],
+      fieldType: [fieldType]
     }, {
       validator: [this.validateGroup, this.validateType]
     });
   }
 
-  initHeader() {
+  initHeader(name: string, value: string) {
     return this._fb.group({
       selected: [false],
-      name: [''],
-      value: ['']
+      name: [name],
+      value: [value]
     }, {
       validator: [this.validateGroup]
     });
   }
 
-  initVariable() {
+  initVariable(name: string, value: string) {
     return this._fb.group({
       selected: [false],
-      name: [''],
-      value: ['']
+      name: [name],
+      value: [value]
     }, {
       validator: [this.validateGroup]
     });
@@ -238,9 +245,9 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     }
   }
 
-  addParam(index: number) {
+  addParam(index: number, name: string, value: string, paramType: string, fieldType: string) {
     const control = (<FormArray>this.workflowEditor.controls['steps']).at(index).get('params') as FormArray;
-    control.push(this.initParam());
+    control.push(this.initParam(name, value, paramType, fieldType));
   }
 
   removeParam(index: number) {
@@ -253,9 +260,9 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     }
   }
 
-  addHeader(index: number) {
+  addHeader(index: number, name: string, value: string) {
     const control = (<FormArray>this.workflowEditor.controls['steps']).at(index).get('headers') as FormArray;
-    control.push(this.initHeader());
+    control.push(this.initHeader(name, value));
   }
 
   removeHeader(index: number) {
@@ -268,9 +275,9 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     }
   }
 
-  addVariable(index: number) {
+  addVariable(index: number, name: string, value: string) {
     const control = (<FormArray>this.workflowEditor.controls['steps']).at(index).get('variables') as FormArray;
-    control.push(this.initVariable());
+    control.push(this.initVariable(name, value));
   }
 
   removeVariable(index: number) {
@@ -297,7 +304,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     this.stateTracker.activeFieldDrop = "";
   }
 
-  addStep() {
+  addStep(): Promise<any> {
     this.closeModal('add');
 
     var newTitle = this.newWorkflowStep.value.stepTitle;
@@ -307,33 +314,36 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     var newAPIDetail;
     var newVerb;
 
-    this.caneService.getAccountDetail(newAccount).toPromise()
-    .then(
-      res=> {
-        newAccountDetail = res['baseURL']
-      }
-    )
-    .then(
-      ()=> {
-        this.caneService.getApiDetail(newAccount, newAPI).toPromise()
-        .then(
-          res=> {
-            newAPIDetail = res['path'];
-            newVerb = res['method']
-          }
-        )
-        .then(
-          () => {
-            const control = <FormArray>this.workflowEditor.controls['steps'];
-            control.push(this.initStep(newTitle, newAccount, newAPI, (newAccountDetail + newAPIDetail), newVerb));
-        
-            this.initTracker();
-            this.newWorkflowStep.reset();
-            this.changeDetector.detectChanges();
-          }
-        )
-      }
-    )
+    return new Promise((resolve) => {
+      this.caneService.getAccountDetail(newAccount).toPromise()
+      .then(
+        res=> {
+          newAccountDetail = res['baseURL']
+        }
+      )
+      .then(
+        ()=> {
+          this.caneService.getApiDetail(newAccount, newAPI).toPromise()
+          .then(
+            res=> {
+              newAPIDetail = res['path'];
+              newVerb = res['method']
+            }
+          )
+          .then(
+            () => {
+              const control = <FormArray>this.workflowEditor.controls['steps'];
+              control.push(this.initStep(newTitle, newAccount, newAPI, (newAccountDetail + newAPIDetail), newVerb));
+          
+              this.initTracker();
+              this.newWorkflowStep.reset();
+              this.changeDetector.detectChanges();
+              resolve(null);
+            }
+          )
+        }
+      )
+    });
   }
 
   remStep() {
@@ -491,67 +501,6 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     });
   }
 
-  // parseQueryString(index: number) {
-  //   var control = (<FormArray>this.workflowEditor.controls['steps']).at(index).get('params') as FormArray;
-  //   var paramName = "";
-  //   var fieldType = "";
-  //   var queryObj = {}
-  //   var split;
-
-  //   if(this.queryEditors) {
-  //     var selectedQuery = this.queryEditors.find(query => query.nativeElement.id == index.toString());
-  //     var data = selectedQuery.nativeElement.value;
-  //     split = data.split('&');
-
-  //     split.forEach((item) => {
-  //       var temp = item.split('=')
-  //       if(temp[0] && temp[1]) {
-  //         if(temp[0].length > 0 && temp[1].length > 0) {
-  //           queryObj[temp[0]] = temp[1]
-  //         }
-  //       }
-  //     })
-  //   } else {
-  //     console.log("Cannot Locate queryEditors!");
-  //   }
-
-  //   console.log(queryObj);
-
-  //   for(var i = 0; i < control.controls.length; i++) {
-  //     if(control.controls[i].get('paramType').value == "query") {
-  //       control.removeAt(i);
-  //     }
-  //   }
-
-  //   Object.keys(queryObj).forEach((key) => {
-  //     paramName = key;
-
-  //     if(!isNaN(queryObj[key])) {
-  //       console.log(key + " => " + (+queryObj[key]) + "(num)");
-  //       fieldType = "number"
-  //     } else if(queryObj[key].toLowerCase() == "true" || queryObj[key].toLowerCase() == "false") {
-  //       console.log(key + " => " + queryObj[key] + "(bool)");
-  //       fieldType = "boolean"
-  //     } else if(typeof(queryObj[key]) == "string"){
-  //       console.log(key + " => " + queryObj[key] + "(str)");
-  //       fieldType = "string"
-  //     } else {
-  //       console.log("Unkown Type: " + queryObj[key]);
-  //     }
-
-  //     var newControl = this._fb.group({
-  //       selected: [false],
-  //       name: [paramName],
-  //       descr: [''],
-  //       paramType: ['query'],
-  //       fieldType: [fieldType],
-  //       value: [queryObj[key]]
-  //     });
-
-  //     control.push(newControl);
-  //   });
-  // }
-
   paramToRAW(index: number) {
     var control = (<FormArray>this.workflowEditor.controls['steps']).at(index).get('params') as FormArray;
     var selectedQuery = this.queryEditors.find(query => query.nativeElement.id == index.toString());
@@ -623,7 +572,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
 
   queryErrors(index: number) {
     var regex = new RegExp(VALID_QUERY);
-    
+
     if(this.queryEditors) {
       var selectedEditor = this.queryEditors.find(query => query.nativeElement.id == index.toString());
 
@@ -673,8 +622,6 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
   }
 
   getAccounts() {
-    // return Object.keys(this.fakeApis);
-    // console.log(this.caneService.getAccount());
     return this.accountList;
   }
 
@@ -797,7 +744,6 @@ type Step struct {
 
     newWorkflow.name = data['workflowName'];
     newWorkflow.description = data['workflowDescription'];
-    // newWorkflow.type = data['workflowType'];
 
     data['steps'].forEach(
       step => {
@@ -813,7 +759,6 @@ type Step struct {
         };
 
         newStep.title = step['stepTitle'];
-        // newStep.description = step['stepDescription'];
         newStep.deviceAccount = step['stepAccount'];
         newStep.apiCall = step['stepAPI'];
 
@@ -848,7 +793,9 @@ type Step struct {
       });
 
       console.log(newWorkflow);
-      this.caneService.createWorkflow(newWorkflow).subscribe(
+      // Add logic to "UPDATE" if flag is set here vs. "SAVE"...
+      this.caneService.createWorkflow(newWorkflow)
+      .subscribe(
         res => {
           console.log(res);
         },
@@ -856,6 +803,94 @@ type Step struct {
           console.log(error);
           this.messageService.newMessage('error', error['statusText'], error['error']['message']);
         });
+  }
+
+  varType(variable: any) {
+    var varType = '';
+
+    if(!isNaN(variable)) {
+      varType = 'number';
+    } else if(variable.toLowerCase() == "true" || variable.toLowerCase() == "false") {
+      varType = 'bool';
+    } else {
+      varType = 'string';
+    }
+
+    return varType;
+  }
+
+  loadWorkflow() {
+    this.caneService.getWorkflowDetail(this.workflowService.targetWorkflow)
+    .subscribe(
+      res => {
+        if(res) {
+          this.workflowEditor.patchValue({ workflowName: res['name']});
+          this.workflowEditor.patchValue({ workflowDescription: res['description']});
+
+          let index = 0;
+
+          res['steps'].forEach(
+            step => {
+              this.newWorkflowStep.patchValue({ stepTitle: step['title'] })
+              this.newWorkflowStep.patchValue({ stepAccount: step['deviceAccount'] })
+              this.newWorkflowStep.patchValue({ stepAPI: step['apiCall'] })
+
+              this.addStep().then(
+                () => {
+                  step['body'].forEach(
+                    body => {
+                      let key = Object.keys(body);
+                      let name = key[0];
+                      let value = body[name];
+                      let type = this.varType(value);
+    
+                      this.addParam(index, name, value, 'body', type);
+                    })
+                }
+              ).then(
+                () => {
+                  step['query'].forEach(
+                    query => {
+                      let key = Object.keys(query);
+                      let name = key[0];
+                      let value = query[name];
+                      let type = this.varType(value);
+    
+                      this.addParam(index, name, value, 'query', type);
+                    })
+                }
+              ).then(
+                () => {
+                  step['headers'].forEach(
+                    header => {
+                      let key = Object.keys(header);
+                      let name = key[0];
+                      let value = header[name];
+    
+                      this.addHeader(index, name, value);
+                    })
+                }
+              ).then(
+                () => {
+                  step['variables'].forEach(
+                    variable => {
+                      let key = Object.keys(variable);
+                      let name = key[0];
+                      let value = variable[name];
+    
+                      this.addVariable(index, name, value);
+                    })
+                }
+              ).then(
+                () => {
+                  index++;
+                }
+              )
+            }
+          )
+        }
+      }
+    )
   }
 
   executeRequest() {

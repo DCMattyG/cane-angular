@@ -17,7 +17,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let workflow of workflows">
-              <td><a href="#">{{ workflow.name }}</a></td>
+              <td><a (click)="updateWorkflow(workflow.name)">{{ workflow.name }}</a></td>
               <td>{{ workflow.type }}</td>
               <td>{{ workflow.description }}</td>
               <td>

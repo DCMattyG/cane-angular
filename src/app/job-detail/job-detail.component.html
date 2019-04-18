@@ -1,7 +1,16 @@
 <div class="content">
   <div class="container">
     <div class="section">
-      <h1 style="padding-bottom: 10px;">Job Details</h1>
+      <div style="display: flex; padding-bottom: 20px;">
+        <div style="margin-right: auto; align-self: center;">
+          <h1>Job Details</h1>
+        </div>
+        <div style="margin-left: auto; align-self: center;">
+          <button class="btn btn--icon btn--medium btn--secondary" [routerLink]="['/job']">
+            <span class="icon-back"></span>
+          </button>
+        </div>
+      </div>
 
       <div class="panel panel--bordered panel--raised-small ">
         <table class='table table--nostripes '>
