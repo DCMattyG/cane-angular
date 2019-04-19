@@ -44,19 +44,6 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
   @ViewChildren('queryEditor') queryEditors: QueryList<ElementRef>;
   @ViewChildren('responseEditor') responseEditors: QueryList<CodeEditorComponent>;
 
-  fakeApis = {
-    "webex" : {
-      "listRooms": {verb: "GET", api: "https://api.ciscospark.com/v1/rooms"},
-      "createRoom": {verb: "POST", api: "https://api.ciscospark.com/v1/rooms"},
-      "deleteRoom": {verb: "DELETE", api: "https://api.ciscospark.com/v1/rooms/{roomId}"}
-    },
-    "meraki": {
-      "newAdmin": {verb: "POST", api: "https://api.meraki.com/api/v0/organizations/{organizationId}/admins"},
-      "newNetwork": {verb: "POST", api: "https://api.meraki.com/api/v0/organizations/{organizationId}/networks"},
-      "newOrg": {verb: "POST", api: "https://api.meraki.com/api/v0/organizations"}
-    }
-  }
-
   stateTracker = {
     activeParamDrop: null,
     activeFieldDrop: null,
@@ -71,6 +58,16 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
   private editDetails = false;
   private accountList;
   private apiList;
+
+  private settingsDrop = false;
+
+  private categories = [
+    "General",
+    "Compute",
+    "Network",
+    "Storage",
+    "Cloud"
+  ];
 
   constructor(
     private _fb: FormBuilder,
@@ -98,6 +95,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     this.workflowEditor = this._fb.group({
       workflowName: ['newWorkflow'],
       workflowDescription: ['New Workflow...'],
+      workflowCategory: ['General'],
       steps: this._fb.array([
           // this.initSteps(),
       ])
@@ -113,7 +111,8 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
 
     this.editWorkflowDetails = this._fb.group({
       workflowName: ['', Validators.required],
-      workflowDescription: ['', Validators.required]
+      workflowDescription: ['', Validators.required],
+      workflowCategory: ['', Validators.required]
     });
 
     this.refreshDevices();
@@ -364,6 +363,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
   modifyDetails() {
     this.workflowEditor.patchValue({ workflowName: this.editWorkflowDetails.value.workflowName });
     this.workflowEditor.patchValue({ workflowDescription: this.editWorkflowDetails.value.workflowDescription });
+    this.workflowEditor.patchValue({ workflowCategory: this.editWorkflowDetails.value.workflowCategory });
 
     this.closeModal('edit');
   }
@@ -405,12 +405,22 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     }
   }
 
+  toggleSettingsDrop() {
+    this.settingsDrop = this.settingsDrop ? false : true;
+  }
+
   setRequestWindow(index: number, state: string) {
     this.stateTracker.steps[index].requestWindow = state;
   }
 
   setEditorTab(index: number, tab: string) {
     this.stateTracker.steps[index].currentTab = tab;
+  }
+
+  setCategory(category: string) {
+    this.toggleSettingsDrop();
+    this.editWorkflowDetails.patchValue({ workflowCategory: category });
+    // this.changeDetector.detectChanges();
   }
 
   // updateResponse(event: Event, index: number) {
@@ -595,6 +605,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     } else if(target == 'edit') {
       this.editWorkflowDetails.patchValue({ workflowName: this.workflowEditor.value.workflowName });
       this.editWorkflowDetails.patchValue({ workflowDescription: this.workflowEditor.value.workflowDescription });
+      this.editWorkflowDetails.patchValue({ workflowCategory: this.workflowEditor.value.workflowCategory });
 
       this.editDetails = true;
     }
@@ -624,20 +635,6 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
         this.apiList = res['apis'];
       }
     )
-  }
-
-  getAccounts() {
-    return this.accountList;
-  }
-
-  getApis(account: string) {
-    if(account) {
-      return Object.keys(this.fakeApis[account]);
-    }
-  }
-
-  getVerb(account: string, api: string) {
-
   }
 
   moveStep(direction: string) {
@@ -743,12 +740,14 @@ type Step struct {
     var newWorkflow = {
       name: '',
       description: '',
+      category: '',
       type: '',
       steps: []
     };
 
     newWorkflow.name = data['workflowName'];
     newWorkflow.description = data['workflowDescription'];
+    newWorkflow.category = data['workflowCategory'].toLowerCase();
 
     data['steps'].forEach(
       step => {
@@ -846,6 +845,7 @@ type Step struct {
         if(res) {
           this.workflowEditor.patchValue({ workflowName: res['name']});
           this.workflowEditor.patchValue({ workflowDescription: res['description']});
+          this.workflowEditor.patchValue({ workflowCategory: res['category'].charAt(0).toUpperCase()});
 
           let index = 0;
 

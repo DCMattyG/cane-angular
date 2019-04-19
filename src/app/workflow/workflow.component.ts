@@ -23,13 +23,16 @@ export class WorkflowComponent {
   constructor(private http: HttpClient,
     private errorService: MessageService,
     private caneService: CaneService,
-    private workflowService: WorkflowService) {
+    private workflowService: WorkflowService,
+    private messageService: MessageService) {
     this.getCaneWorkflow();
     this.workflowService.currentOperation = '';
     this.workflowService.targetWorkflow = '';
   }
 
   getCaneWorkflow() {
+    this.workflows = [];
+    
     this.caneService.getWorkflow()
     .subscribe(res => {
       res['workflows'].forEach(element => {
@@ -65,6 +68,18 @@ export class WorkflowComponent {
     this.workflowService.updateWorkflow(target);
   }
 
+  deleteWorkflow(target: string) {
+    this.caneService.deleteWorkflow(target)
+    .subscribe(
+      () => {
+        this.messageService.newMessage('success', 'Workflow Deleted', `Workflow "${target}" successfully deleted!`);
+        this.getCaneWorkflow();
+      },
+      error => {
+        this.messageService.newMessage('error', 'Error', `Error deleting workflow "${target}"!`);
+      }
+    )
+  }
   executeWorkflow(name: string) {
     console.log("Executing Workflow: " + name);
   }

@@ -270,7 +270,7 @@
     <div class="modal__content">
       <a class="modal__close" (click)="closeModal('add')"><span class="icon-close"></span></a>
       <div class="modal__header">
-        <h3 class="modal__title">Add New Step</h3>
+        <h3 class="modal__title">New Step</h3>
       </div>
       <div class="modal__body">
         <div style="width: 50%; margin: auto; box-sizing: border-box; align-content: center;">
@@ -280,7 +280,7 @@
                 <p class="subtitle">Title: </p>
               </td>
               <td>
-                <input type="text" formControlName="stepTitle" style="border-bottom: 1px solid #dfdfdf;" />
+                <input type="text" formControlName="stepTitle" class="bottom-line" />
               </td>
             </tr>
             <tr>
@@ -288,7 +288,7 @@
                 <p class="subtitle">Account: </p>
               </td>
               <td>
-                <select formControlName="stepAccount" style="border-bottom: 1px solid #dfdfdf;" (change)="refreshApis(newWorkflowStep.get('stepAccount').value)">
+                <select formControlName="stepAccount" class="bottom-line" (change)="refreshApis(newWorkflowStep.get('stepAccount').value)">
                   <option *ngFor="let account of accountList" [value]="account">{{ account }}</option>
                 </select>
               </td>
@@ -298,7 +298,7 @@
                 <p class="subtitle">API: </p>
               </td>
               <td>
-                <select formControlName="stepAPI" style="border-bottom: 1px solid #dfdfdf;">
+                <select formControlName="stepAPI" class="bottom-line">
                   <option *ngFor="let api of apiList" [value]="api">{{ api }}
                   </option>
                 </select>
@@ -324,11 +324,38 @@
         <h3 class="modal__title">Workflow Details</h3>
       </div>
       <div class="modal__body">
-        <div style="width: 50%; margin: auto; box-sizing: border-box; align-content: center;">
-          <p class="subtitle">Name: </p>
-          <input spellcheck="false" type="text" formControlName="workflowName" style="border: none; border-bottom: 1px solid #dfdfdf; text-align: center;"/>
-          <p class="subtitle">Description: </p>
-          <textarea spellcheck="true" formControlName="workflowDescription" style="border: 1px solid #dfdfdf; width: 100%; height: 100px; resize: none;"></textarea>
+        <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <div class="form-group__text"  style="align-items: center;">
+                    <input spellcheck="false" type="text" formControlName="workflowName" class="bottom-line" style="text-align: center;"/>
+                  <label for="input-layout-default">Name:</label>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 text-center">
+              <div class="form-group">
+                <div class="form-group__text bottom-line" style="align-items: center;">
+                  <label for="input-layout-default">Category:</label>
+                  <div class="dropdown dropdown--center dropdown--tail" [ngClass]="{ 'active': settingsDrop }">
+                      <a (click)="toggleSettingsDrop()"><input type="text" formControlName="workflowCategory" style="background: none; border: none; box-shadow: none; width: 90%; padding-left: 25px; text-align: center;" readonly /></a>
+                      <div class="dropdown__menu">
+                          <a *ngFor="let category of categories" (click)="setCategory(category)" style="display: block; text-align: center; padding: 0; border: none;">{{ category }}</a>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <div class="row" style="padding-top: 20px;">
+          <div class="col-md-12">
+            <div class="form-group">
+              <div class="form-group__text" style="align-items: center;">
+                  <textarea spellcheck="true" formControlName="workflowDescription" style="border: 1px solid #dfdfdf; width: 100%; height: 100px; resize: none;"></textarea>
+                <label for="input-layout-default">Description:</label>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="modal__footer">
