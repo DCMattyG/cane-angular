@@ -845,7 +845,7 @@ type Step struct {
         if(res) {
           this.workflowEditor.patchValue({ workflowName: res['name']});
           this.workflowEditor.patchValue({ workflowDescription: res['description']});
-          this.workflowEditor.patchValue({ workflowCategory: res['category'].charAt(0).toUpperCase()});
+          this.workflowEditor.patchValue({ workflowCategory: (res['category'].charAt(0).toUpperCase() + res['category'].slice(1))});
 
           let index = 0;
 
