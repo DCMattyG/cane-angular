@@ -60,6 +60,8 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
   private apiList;
 
   private settingsDrop = false;
+  private accountDrop = false;
+  private apiDrop = false;
 
   private categories = [
     "General",
@@ -311,6 +313,8 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
   addStep(): Promise<any> {
     this.closeModal('add');
 
+    console.log(this.newWorkflowStep);
+
     var newTitle = this.newWorkflowStep.value.stepTitle;
     var newAccount = this.newWorkflowStep.value.stepAccount;
     var newAPI = this.newWorkflowStep.value.stepAPI
@@ -409,6 +413,14 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     this.settingsDrop = this.settingsDrop ? false : true;
   }
 
+  toggleAccountDrop() {
+    this.accountDrop = this.accountDrop ? false : true;
+  }
+
+  toggleApiDrop() {
+    this.apiDrop = this.apiDrop ? false : true;
+  }
+
   setRequestWindow(index: number, state: string) {
     this.stateTracker.steps[index].requestWindow = state;
   }
@@ -420,6 +432,19 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
   setCategory(category: string) {
     this.toggleSettingsDrop();
     this.editWorkflowDetails.patchValue({ workflowCategory: category });
+    // this.changeDetector.detectChanges();
+  }
+
+  setAccount(account: string) {
+    this.toggleAccountDrop();
+    this.newWorkflowStep.patchValue({ stepAccount: account });
+    this.refreshApis(account)
+    // this.changeDetector.detectChanges();
+  }
+
+  setApi(api: string) {
+    this.toggleApiDrop();
+    this.newWorkflowStep.patchValue({ stepAPI: api });
     // this.changeDetector.detectChanges();
   }
 
@@ -614,6 +639,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
   closeModal(target: string) {
     if(target == 'add') {
       this.newEditor = false;
+      // this.newWorkflowStep.reset();
     } else if(target == 'edit') {
       this.editDetails = false;
     }

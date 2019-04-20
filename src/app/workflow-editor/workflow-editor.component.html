@@ -2,7 +2,8 @@
   <form [formGroup]="workflowEditor" novalidate (ngSubmit)="onSubmit()">
     <div class="editor-header">
       <div style="margin-right: auto">
-        <span class="editor-title">Workflow: "{{ workflowEditor.controls['workflowName'].value }}" <span class="icon-pencil icon-small text--primary" (click)="openModal('edit')"></span></span>
+        <span class="editor-title">Workflow: "{{ workflowEditor.controls['workflowName'].value }}" <span
+            class="icon-pencil icon-small text--primary" (click)="openModal('edit')"></span></span>
         <input type="hidden" formControlName="workflowName" [value]="workflowName">
         <input type="hidden" formControlName="workflowDescription" [value]="workflowDescription">
       </div>
@@ -11,15 +12,15 @@
           <span class="icon-close"></span>
         </button>
         <button type="submit" class="btn btn--icon btn--small btn--success" [disabled]="!workflowEditor.valid">
-            <span class="icon-save"></span>
+          <span class="icon-save"></span>
         </button>
         <span class="icon-export icon-medium step-up" (click)="moveStep('up')"></span>
         <span class="icon-import icon-medium step-down" (click)="moveStep('down')"></span>
         <button type="button" class="btn btn--icon btn--small btn--primary" (click)="openModal('add')">
-            <span class="icon-add"></span>
+          <span class="icon-add"></span>
         </button>
         <button type="button" class="btn btn--icon btn--small btn--negative" (click)="remStep()">
-            <span class="icon-remove"></span>
+          <span class="icon-remove"></span>
         </button>
       </div>
     </div>
@@ -37,8 +38,7 @@
                     </label>
                   </div>
                   <div class="col align-self-center text-left font-weight-bold">
-                    <div class="text-info"><strong>{{(i+1)}}.
-                        {{workflowEditor.controls.steps.controls[i].controls.stepTitle.value}}</strong></div>
+                    <div class="text-info"><strong>{{(i+1)}}.{{workflowEditor.controls.steps.controls[i].controls.stepTitle.value}}</strong></div>
                     <div>
                       <span class="http-verb">
                         <strong>{{workflowEditor.controls.steps.controls[i].controls.stepVerb.value}}</strong>
@@ -198,8 +198,7 @@
                       <div id="response-button-group" class="editor-button">
                         <div class="editor-button-group">
                           <div class="editor-button-primary">
-                            <button type="button" class="btn btn--small btn--primary"
-                              (click)="executeRequest()">Execute</button>
+                            <button type="button" class="btn btn--small btn--primary" (click)="executeRequest()">Execute</button>
                           </div>
                         </div>
                       </div>
@@ -266,69 +265,78 @@
 
 <div class="modal modal--small" id="modal-small" [ngClass]="{'hide': !newEditor}">
   <form [formGroup]="newWorkflowStep" novalidate (ngSubmit)="addStep()">
-  <div class="modal__dialog">
-    <div class="modal__content">
-      <a class="modal__close" (click)="closeModal('add')"><span class="icon-close"></span></a>
-      <div class="modal__header">
-        <h3 class="modal__title">New Step</h3>
-      </div>
-      <div class="modal__body">
-        <div style="width: 50%; margin: auto; box-sizing: border-box; align-content: center;">
-          <table>
-            <tr>
-              <td style="text-align: right;">
-                <p class="subtitle">Title: </p>
-              </td>
-              <td>
-                <input type="text" formControlName="stepTitle" class="bottom-line" />
-              </td>
-            </tr>
-            <tr>
-              <td style="text-align: right;">
-                <p class="subtitle">Account: </p>
-              </td>
-              <td>
-                <select formControlName="stepAccount" class="bottom-line" (change)="refreshApis(newWorkflowStep.get('stepAccount').value)">
-                  <option *ngFor="let account of accountList" [value]="account">{{ account }}</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td style="text-align: right;">
-                <p class="subtitle">API: </p>
-              </td>
-              <td>
-                <select formControlName="stepAPI" class="bottom-line">
-                  <option *ngFor="let api of apiList" [value]="api">{{ api }}
-                  </option>
-                </select>
-              </td>
-            </tr>
-          </table>
+    <div class="modal__dialog">
+      <div class="modal__content">
+        <a class="modal__close" (click)="closeModal('add')"><span class="icon-close"></span></a>
+        <div class="modal__header">
+          <h3 class="modal__title">New Step</h3>
+        </div>
+        <div class="modal__body">
+          <div style="width: 50%; margin: auto; box-sizing: border-box; align-content: center;">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <div class="form-group__text" style="align-items: center;">
+                    <input type="text" formControlName="stepTitle" class="bottom-line" style="text-align: center;"/>
+                    <label for="input-layout-default">Title:</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row" style="padding-top: 20px;">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <div class="form-group__text bottom-line" style="align-items: center;">
+                    <label for="input-layout-default">Account:</label>
+                    <div class="dropdown dropdown--center dropdown--tail" [ngClass]="{ 'active': accountDrop }">
+                      <a (click)="toggleAccountDrop()"><input type="text" formControlName="stepAccount" style="background: none; border: none; box-shadow: none; width: 90%; padding-left: 25px; text-align: center;" readonly /></a>
+                      <div class="dropdown__menu">
+                        <a *ngFor="let account of accountList" (click)="setAccount(account)" style="display: block; text-align: center; padding: 0; border: none;">{{ account }}</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row" style="padding-top: 20px;">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <div class="form-group__text bottom-line" style="align-items: center;">
+                    <label for="input-layout-default">API:</label>
+                    <div class="dropdown dropdown--center dropdown--tail" [ngClass]="{ 'active': apiDrop }">
+                      <a (click)="toggleApiDrop()"><input type="text" formControlName="stepAPI" style="background: none; border: none; box-shadow: none; width: 90%; padding-left: 25px; text-align: center;" readonly /></a>
+                      <div class="dropdown__menu">
+                        <a *ngFor="let api of apiList" (click)="setApi(api)" style="display: block; text-align: center; padding: 0; border: none;">{{ api }}</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal__footer">
+          <button class="btn" type="submit" [disabled]="!newWorkflowStep.valid">Add</button>
         </div>
       </div>
-      <div class="modal__footer">
-        <button class="btn" type="submit" [disabled]="!newWorkflowStep.valid">Add</button>
-      </div>
     </div>
-  </div>
   </form>
 </div>
 
 <div class="modal modal--small" id="modal-small" [ngClass]="{'hide': !editDetails}">
   <form [formGroup]="editWorkflowDetails" novalidate (ngSubmit)="modifyDetails()">
-  <div class="modal__dialog">
-    <div class="modal__content">
-      <a class="modal__close" (click)="closeModal('edit')"><span class="icon-close"></span></a>
-      <div class="modal__header">
-        <h3 class="modal__title">Workflow Details</h3>
-      </div>
-      <div class="modal__body">
-        <div class="row">
+    <div class="modal__dialog">
+      <div class="modal__content">
+        <a class="modal__close" (click)="closeModal('edit')"><span class="icon-close"></span></a>
+        <div class="modal__header">
+          <h3 class="modal__title">Workflow Details</h3>
+        </div>
+        <div class="modal__body">
+          <div class="row">
             <div class="col-md-6">
               <div class="form-group">
-                <div class="form-group__text"  style="align-items: center;">
-                    <input spellcheck="false" type="text" formControlName="workflowName" class="bottom-line" style="text-align: center;"/>
+                <div class="form-group__text" style="align-items: center;">
+                  <input spellcheck="false" type="text" formControlName="workflowName" class="bottom-line" style="text-align: center;" />
                   <label for="input-layout-default">Name:</label>
                 </div>
               </div>
@@ -338,30 +346,30 @@
                 <div class="form-group__text bottom-line" style="align-items: center;">
                   <label for="input-layout-default">Category:</label>
                   <div class="dropdown dropdown--center dropdown--tail" [ngClass]="{ 'active': settingsDrop }">
-                      <a (click)="toggleSettingsDrop()"><input type="text" formControlName="workflowCategory" style="background: none; border: none; box-shadow: none; width: 90%; padding-left: 25px; text-align: center;" readonly /></a>
-                      <div class="dropdown__menu">
-                          <a *ngFor="let category of categories" (click)="setCategory(category)" style="display: block; text-align: center; padding: 0; border: none;">{{ category }}</a>
-                      </div>
+                    <a (click)="toggleSettingsDrop()"><input type="text" formControlName="workflowCategory" style="background: none; border: none; box-shadow: none; width: 90%; padding-left: 25px; text-align: center;" readonly /></a>
+                    <div class="dropdown__menu">
+                      <a *ngFor="let category of categories" (click)="setCategory(category)" style="display: block; text-align: center; padding: 0; border: none;">{{ category }}</a>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        <div class="row" style="padding-top: 20px;">
-          <div class="col-md-12">
-            <div class="form-group">
-              <div class="form-group__text" style="align-items: center;">
+          <div class="row" style="padding-top: 20px;">
+            <div class="col-md-12">
+              <div class="form-group">
+                <div class="form-group__text" style="align-items: center;">
                   <textarea spellcheck="true" formControlName="workflowDescription" style="border: 1px solid #dfdfdf; width: 100%; height: 100px; resize: none;"></textarea>
-                <label for="input-layout-default">Description:</label>
+                  <label for="input-layout-default">Description:</label>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="modal__footer">
-        <button class="btn" type="submit" [disabled]="!editWorkflowDetails.valid">Update</button>
+        <div class="modal__footer">
+          <button class="btn" type="submit" [disabled]="!editWorkflowDetails.valid">Update</button>
+        </div>
       </div>
     </div>
-  </div>
   </form>
 </div>
