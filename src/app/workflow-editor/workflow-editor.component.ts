@@ -438,6 +438,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
   setAccount(account: string) {
     this.toggleAccountDrop();
     this.newWorkflowStep.patchValue({ stepAccount: account });
+    this.newWorkflowStep.patchValue({ stepAPI: '' });
     this.refreshApis(account)
     // this.changeDetector.detectChanges();
   }

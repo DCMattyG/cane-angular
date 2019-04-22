@@ -31,6 +31,10 @@ export class ApiComponent implements OnInit{
   messageText = "";
   baseUrl = environment.baseUrl;
 
+  accountDrop = false;
+  typeDrop = false;
+  methodDrop = false;
+
   typeList : string[] = [
     "JSON",
     "XML"
@@ -140,7 +144,43 @@ export class ApiComponent implements OnInit{
 
   closeModal() {
     this.newApi = false;
+
+    this.accountDrop = false;
+    this.typeDrop = false;
+    this.methodDrop = false;
+
     this.newApiForm.reset();
+  }
+
+  toggleDrop(target: string) {
+    if(target == 'account') {
+      this.accountDrop = this.accountDrop ? false : true;
+    }
+    
+    if(target == 'type') {
+      this.typeDrop = this.typeDrop ? false : true;
+    }
+
+    if(target == 'method') {
+      this.methodDrop = this.methodDrop ? false : true;
+    }
+  }
+
+  setDrop(target: string, data: string) {
+    if(target == 'account') {
+      this.newApiForm.patchValue({ deviceAccount: data });
+      this.toggleDrop('account');
+    }
+
+    if(target == 'type') {
+      this.newApiForm.patchValue({ type: data });
+      this.toggleDrop('type');
+    }
+
+    if(target == 'method') {
+      this.newApiForm.patchValue({ method: data });
+      this.toggleDrop('method');
+    }
   }
 
   addApi() {

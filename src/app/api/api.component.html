@@ -55,50 +55,65 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
-                  <div class="form-group__text">
-                    <input type="text" formControlName="name" [ngClass]="{'disabled': modalFunction == 'edit'}"/>
+                  <div class="form-group__text bottom-line">
+                    <input type="text" formControlName="name" class="no-dropdown" [ngClass]="{'disabled': modalFunction == 'edit'}"/>
                     <label for="input-layout-default">Name</label>
                   </div>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
-                  <div class="form-group__text select">
-                    <select formControlName="deviceAccount" [ngClass]="{'disabled': modalFunction == 'edit'}">
-                      <option *ngFor="let account of accounts" [value]="account">{{ account }}</option>
-                    </select>
-                    <label for="select-size-default">Device</label>
+                  <div class="form-group__text bottom-line">
+                    <ng-container *ngIf="modalFunction != 'edit'">
+                      <label for="input-layout-default">Account</label>
+                      <div class="dropdown dropdown--center dropdown--tail" [ngClass]="{ 'active': accountDrop }">
+                        <a (click)="toggleDrop('account')"><input type="text" formControlName="deviceAccount" readonly /></a>
+                        <div class="dropdown__menu">
+                          <a *ngFor="let account of accounts" (click)="setDrop('account', account)" class="dropdown-list">{{ account }}</a>
+                        </div>
+                      </div>
+                    </ng-container>
+                    <ng-container *ngIf="modalFunction == 'edit'">
+                      <label for="input-layout-default">Account</label>
+                      <input type="text" formControlName="deviceAccount" class="no-dropdown" [ngClass]="{'disabled': modalFunction == 'edit'}" />
+                    </ng-container>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div class="row" style="padding-top: 20px;">
               <div class="col-md-6">
                 <div class="form-group">
-                  <div class="form-group__text select">
-                    <select formControlName="type">
-                      <option *ngFor="let typeOption of typeList" [value]="typeOption">{{ typeOption }}</option>
-                    </select>
-                    <label class="label-padding" for="select-size-default">Type</label>
+                  <div class="form-group__text bottom-line">
+                    <label for="input-layout-default">Type</label>
+                    <div class="dropdown dropdown--center dropdown--tail" [ngClass]="{ 'active': typeDrop }">
+                      <a (click)="toggleDrop('type')"><input type="text" formControlName="type" readonly /></a>
+                      <div class="dropdown__menu">
+                        <a *ngFor="let typeOption of typeList" (click)="setDrop('type', typeOption)" class="dropdown-list">{{ typeOption }}</a>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
-                  <div class="form-group__text select">
-                    <select formControlName="method">
-                      <option *ngFor="let methodOption of methodList" [value]="methodOption">{{ methodOption }}</option>
-                    </select>
-                    <label class="label-padding" for="select-size-default">Method</label>
+                  <div class="form-group__text bottom-line">
+                    <label for="input-layout-default">Method</label>
+                    <div class="dropdown dropdown--center dropdown--tail" [ngClass]="{ 'active': methodDrop }">
+                      <a (click)="toggleDrop('method')"><input type="text" formControlName="method" readonly /></a>
+                      <div class="dropdown__menu">
+                        <a *ngFor="let methodOption of methodList" (click)="setDrop('method', methodOption)" class="dropdown-list">{{ methodOption }}</a>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div class="row" style="padding-top: 20px;">
               <div class="col-md-12">
                 <div class="form-group">
-                  <div class="form-group__text">
-                    <input type="text" formControlName="path"/>
+                  <div class="form-group__text bottom-line">
+                    <input type="text" formControlName="path" class="no-dropdown" />
                     <label class="label-padding" for="input-uri">API Endpoint</label>
                   </div>
                 </div>
