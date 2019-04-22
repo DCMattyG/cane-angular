@@ -11,8 +11,8 @@
               <th>Name</th>
               <th>Type</th>
               <th>URL</th>
-              <th>Status</th>
-              <th>Proxy Required</th>
+              <th style="text-align: center;">Status</th>
+              <th style="text-align: center;">Proxy Required</th>
               <th>Passthrough Endpoint</th>
               <th></th>
             </tr>
@@ -24,12 +24,12 @@
               </td>
               <td>{{ account.authType }}</td>
               <td>{{ account.baseURL }}</td>
-              <td>
+              <td style="text-align: center;">
                 <span *ngIf="account.status == 0" class="icon-remove-outline icon-medium text-muted"></span>
                 <span *ngIf="account.status == 1" class="icon-check-outline icon-medium text-success"></span>
                 <span *ngIf="account.status == 2" class="icon-warning-outline icon-medium text-warning"></span>
               </td>
-              <td>
+              <td style="text-align: center;">
                 <span *ngIf="account.requireProxy == true">Yes</span>
                 <span *ngIf="account.requireProxy == false">No</span>
               </td>
