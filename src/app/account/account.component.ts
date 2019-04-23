@@ -210,7 +210,7 @@ export class AccountComponent implements OnInit {
     // remove all empty values
     for (let prop in data.authObj) {
       if (!data.authObj[prop]) {
-          delete data.authObj[prop];
+        delete data.authObj[prop];
       }
     }
 
