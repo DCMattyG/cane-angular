@@ -11,7 +11,7 @@ import { resolve } from 'q';
 import { Router } from '@angular/router';
 
 const VALID_NAME = /^(\$*[a-zA-Z]+)(\.(([a-zA-Z]+)|(\d+\.[a-zA-Z]+)))*(\.\d+)?$/;
-const VALID_QUERY = /^(([$]*[\w-]+(=[\w-]+))?(&[$]*[\w-]+(=[\w-' ]+))*)?$/;
+const VALID_QUERY = /^(([$]*[\w-]+(=[\w-' ]+))?(&[$]*[\w-]+(=[\w-' ]+))*)?$/;
 
 @Component({
   selector: 'app-workflow-editor',

@@ -20,7 +20,7 @@
           <tbody>
             <tr *ngFor="let account of accounts">
               <td>
-                <a (click)="openModal()">{{ account.name }}</a> <!-- Placeholder to setup edit stuff -->
+                <a (click)="editAccount(account.name)">{{ account.name }}</a>
               </td>
               <td>{{ account.authType }}</td>
               <td>{{ account.baseURL }}</td>
@@ -53,148 +53,194 @@
       <form [formGroup]="accountForm" (ngSubmit)="onSubmit()" autocomplete="off">
         <a class="modal__close" (click)="closeModal()"><span class="icon-close"></span></a>
         <div class="modal__header">
-          <h1 class="modal__title">New Account</h1>
+          <h1 class="modal__title">{{ modalFunction == 'new' ? 'New Account' : 'Edit Account' }}</h1>
         </div>
         <div class="modal__body">
+          <div class="panel">
+            <div class="row" style="padding-top: 20px;">
+              <div class="col-md-5">
+                <div class="form-group">
+                  <div class="form-group__text bottom-line">
+                    <input type="text" formControlName="name" class="no-dropdown" [ngClass]="{'disabled': modalFunction == 'edit'}"/>
+                    <label for="input-layout-default">Name</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-5">
+                <div class="form-group">
+                  <div class="form-group__text bottom-line">
+                    <label for="input-layout-default">Authentication</label>
+                    <div class="dropdown dropdown--center dropdown--tail" [ngClass]="{ 'active': typeDrop }">
+                      <a (click)="toggleDrop('type')">
+                        <input type="text" formControlName="authType" style="display: none;" readonly />
+                        <input type="text" [value]="authMap[this.accountForm.controls['authType'].value]" readonly />
+                      </a>
+                      <div class="dropdown__menu">
+                        <a (click)="setDrop('type', 'none')" class="dropdown-list">None</a>
+                        <a (click)="setDrop('type', 'basic')" class="dropdown-list">Basic</a>
+                        <!-- <a (click)="setDrop('type', 'session')" class="dropdown-list">Session</a> -->
+                        <a (click)="setDrop('type', 'apikey')" class="dropdown-list">APIKey</a>
+                        <a (click)="setDrop('type', 'rfc3447')" class="dropdown-list">RFC 3447</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <div class="form-group__text">
+                    <div style="align-items: center;">
+                        <label for="input-layout-default">Proxy</label>
+                      <label class="checkbox">
+                        <input type="checkbox" formControlName="requireProxy">
+                        <span class="checkbox__input"></span>
+                        <!-- <span class="checkbox__label hidden-xs">Proxy</span> -->
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row" style="padding-top: 20px;">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <div class="form-group__text bottom-line">
+                    <input type="text" formControlName="baseURL" class="no-dropdown"/>
+                    <label for="input-layout-default">URI</label>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-            <div class="form-group half-margin-bottom">
-              <div class="form-group__text">
-                <input id="input-name" type="text" value="" formControlName="name">
-                <label for="input-name">Name</label>
-              </div>
-            </div>
-            <div class="form-group half-margin-bottom">
-              <div class="form-group__text">
-                <input id="input-uri" type="text" formControlName="baseURL">
-                <label for="input-uri">URI</label>
-              </div>
-            </div>
-            <label class="checkbox">
-              <input type="checkbox" formControlName="requireProxy">
-              <span class="checkbox__input"></span>
-              <span class="checkbox__label hidden-xs">Require Proxy</span>
-            </label>
-
-            <div class="form-group">
-              <div class="form-group__text select">
-                <select id="" formControlName="authType" (change)="onAuthChange($event.target.value)">
-                  <option value="none" selected>No Authentication</option>
-                  <option value="basic">Basic </option>
-                  <option value="session">Session </option>
-                  <option value="apikey">APIKey </option>
-                  <option value="rfc3447">RFC 3447 </option>
-                </select>
-                <label for="select-size-default">Type</label>
-              </div>
-            </div>
             <br>
 
-          <div formGroupName="authObj">
-            <div *ngIf="accountForm.value.authType == 'rfc3447'">
-              <div class="form-group half-margin-bottom">
-                <div class="form-group__text">
-                  <input id="input-type-pubkey" type="text" formControlName="publicKey">
-                  <label for="input-type-pubkey">Public Key</label>
+            <div formGroupName="authObj">
+              <div *ngIf="accountForm.value.authType == 'rfc3447'">
+                <div class="row" style="padding-top: 20px;">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <div class="form-group__text bottom-line">
+                        <input type="text" formControlName="publicKey" class="no-dropdown"/>
+                        <label for="input-layout-default">Public Key</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row" style="padding-top: 20px;">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <div class="form-group__text no-bottom-line">
+                        <textarea id="input-type-privkey" type="text" rows="6" formControlName="privateKey"></textarea>
+                        <label for="input-layout-default" style="padding-bottom: 10px;">Private Key</label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="form-group half-margin-bottom">
-                <div class="form-group__text">
-                  <textarea id="input-type-privkey" type="text" rows="6" formControlName="privateKey"></textarea>
-                  <label for="input-type-privkey">Private Key</label>
+
+              <div *ngIf="accountForm.value.authType == 'apikey'">
+                <div class="row" style="padding-top: 20px;">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <div class="form-group__text bottom-line">
+                        <input type="text" formControlName="header" class="no-dropdown"/>
+                        <label for="input-layout-default">Header</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <div class="form-group__text bottom-line">
+                        <input type="text" formControlName="key" class="no-dropdown"/>
+                        <label for="input-layout-default">Key</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="accountForm.value.authType == 'basic'">
+                <div class="row" style="padding-top: 20px;">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <div class="form-group__text bottom-line">
+                        <input type="text" formControlName="username" class="no-dropdown"/>
+                        <label for="input-layout-default">Username</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <div class="form-group__text bottom-line">
+                        <input type="text" formControlName="password" class="no-dropdown"/>
+                        <label for="input-layout-default">Password</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="accountForm.value.authType == 'session'">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group half-margin-bottom">
+                      <div class="form-group__text">
+                        <input id="input-type-sessionusername" type="text" value="" formControlName="session_username">
+                        <label for="input-type-sessionusername">Username</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group half-margin-bottom">
+                      <div class="form-group__text">
+                        <input id="input-type-sessionusernamemap" type="text" value=""
+                          formControlName="session_usernameMap">
+                        <label for="input-type-sessionusernamemap">Maps To</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group half-margin-bottom">
+                      <div class="form-group__text">
+                        <input id="input-type-sessionpassword" type="text" value="" formControlName="session_password">
+                        <label for="input-type-sessionpassword">Password</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group half-margin-bottom">
+                      <div class="form-group__text">
+                        <input id="input-type-sessionpasswordmap" type="text" value=""
+                          formControlName="session_passwordMap">
+                        <label for="input-type-sessionpasswordmap">Maps To</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group half-margin-bottom">
+                  <div class="form-group__text">
+                    <textarea id="input-type-authbody" type="text" rows="6" formControlName="authBody"></textarea>
+                    <label for="input-type-authbody">Auth Body</label>
+                  </div>
+                  <button ng-click="parseResponse()" class="btn btn--secondary btn--small btn--icon"><span
+                      class="icon-animation icon--small"></span></button>
+                </div>
+                <div class="form-group half-margin-bottom">
+                  <div class="form-group__text">
+                    <input id="input-type-lifetime" type="text" value="" formControlName="cookieLifetime">
+                    <label for="input-type-lifetime">Cookie Lifetime</label>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div *ngIf="accountForm.value.authType == 'apikey'">
-              <div class="form-group half-margin-bottom">
-                <div class="form-group__text">
-                  <input id="input-type-header" type="text" value="" formControlName="header">
-                  <label for="input-type-header">Header</label>
-                </div>
-              </div>
-              <div class="form-group half-margin-bottom">
-                <div class="form-group__text">
-                  <input id="input-key" type="text" value="" formControlName="key">
-                  <label for="input-key">Key</label>
-                </div>
-              </div>
-            </div>
-
-            <div *ngIf="accountForm.value.authType == 'session'">
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="form-group half-margin-bottom">
-                    <div class="form-group__text">
-                      <input id="input-type-sessionusername" type="text" value="" formControlName="session_username">
-                      <label for="input-type-sessionusername">Username</label>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-group half-margin-bottom">
-                    <div class="form-group__text">
-                      <input id="input-type-sessionusernamemap" type="text" value=""
-                        formControlName="session_usernameMap">
-                      <label for="input-type-sessionusernamemap">Maps To</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="form-group half-margin-bottom">
-                    <div class="form-group__text">
-                      <input id="input-type-sessionpassword" type="text" value="" formControlName="session_password">
-                      <label for="input-type-sessionpassword">Password</label>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-group half-margin-bottom">
-                    <div class="form-group__text">
-                      <input id="input-type-sessionpasswordmap" type="text" value=""
-                        formControlName="session_passwordMap">
-                      <label for="input-type-sessionpasswordmap">Maps To</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="form-group half-margin-bottom">
-                <div class="form-group__text">
-                  <textarea id="input-type-authbody" type="text" rows="6" formControlName="authBody"></textarea>
-                  <label for="input-type-authbody">Auth Body</label>
-                </div>
-                <button ng-click="parseResponse()" class="btn btn--secondary btn--small btn--icon"><span
-                    class="icon-animation icon--small"></span></button>
-              </div>
-              <div class="form-group half-margin-bottom">
-                <div class="form-group__text">
-                  <input id="input-type-lifetime" type="text" value="" formControlName="cookieLifetime">
-                  <label for="input-type-lifetime">Cookie Lifetime</label>
-                </div>
-              </div>
-            </div>
-
-            <div *ngIf="accountForm.value.authType == 'basic'">
-              <div class="form-group half-margin-bottom">
-                <div class="form-group__text">
-                  <input type="text" value="" formControlName="username">
-                  <label for="input-username">Username</label>
-                </div>
-              </div>
-              <div class="form-group half-margin-bottom">
-                <div class="form-group__text">
-                  <input type="password" value="" formControlName="password">
-                  <label for="input-basicpassword">Password</label>
-                </div>
-              </div>
-            </div>
           </div>
-
         </div>
 
         <div class="modal__footer">
-          <button type="submit" [disabled]="!accountForm.valid" class="btn btn--success">Submit</button>
+          <button type="submit" [disabled]="!accountForm.valid" class="btn btn--success">{{ modalFunction == 'new' ? 'Submit' : 'Update' }}</button>
           <button type="reset" class="btn" (click)="closeModal()">Cancel</button>
         </div>
       </form>

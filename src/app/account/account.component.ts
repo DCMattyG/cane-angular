@@ -1,17 +1,29 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, Validators, FormControl, FormArray } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { CaneService } from '../cane/cane.service';
 
 interface Account {
-  authType: string;
   name: string;
-  requireProxy: string;
   baseURL: string;
+  requireProxy: string;
+  authType: string;
   status: number;
   endpoint: string;
 }
+
+// interface AuthObj {
+//   publicKey: string,
+//   privateKey: string,
+//   header: string,
+//   key: string,
+//   authBody: string,
+//   authBodyMap: string,
+//   cookielifetime: number,
+//   username: string,
+//   password: string
+// }
 
 @Component({
   selector: 'app-account',
@@ -22,12 +34,23 @@ export class AccountComponent implements OnInit {
   accounts: Account[] = [];
   baseUrl = environment.baseUrl;
   newAccount = false;
+  modalFunction = 'new';
+
+  typeDrop = false;
+
+  authMap = {
+    'none': 'None',
+    'basic': 'Basic',
+    'session': 'Session',
+    'apikey': 'APIKey',
+    'rfc3447': 'RFC 3447'
+  }
 
   accountForm = this.fb.group({
     name: ['', [Validators.required, this.noWhitespaceValidator]],
     baseURL: ['', Validators.required],
     requireProxy: [false],
-    authType: ['', Validators.required],
+    authType: ['none', Validators.required],
     authObj: this.fb.group({
       publicKey: [''],
       privateKey: [''],
@@ -77,33 +100,6 @@ export class AccountComponent implements OnInit {
     }); 
   } 
 
-  // getAccounts() {
-  //   this.accounts = [];
-  //   this.caneService.getAccount()
-  //   .subscribe(
-  //     (res: any[]) => {
-  //       console.log(res);
-  //       if(res && res.length > 0) {
-  //         res['devices'].forEach(
-  //           element => {
-  //             this.getAccountDetail(element);
-  //         });
-  //       }
-  //   });
-  // }
-
-  // getAccountDetail(accountName: string) {
-  //   this.caneService.getAccountDetail(accountName)
-  //   .subscribe((res) => {
-  //     console.log(res);
-  //     res['status'] = "1";
-  //     res['endpoint'] = this.baseUrl + "/" + accountName;
-  //     delete res['authObj'];
-  //     console.log(res);
-  //     this.accounts.push(<Account>res);
-  //   });
-  // }
-
   resetModal() {
     this.accountForm.reset();   
   }
@@ -111,11 +107,80 @@ export class AccountComponent implements OnInit {
   closeModal() {
     this.resetModal();
     this.newAccount = false;
+    this.modalFunction = 'new';
   }
 
   openModal() {
     console.log("Opening Modal...")
     this.newAccount = true;
+  }
+
+  toggleDrop(target: string) {
+    if(target == 'type') {
+      this.typeDrop = this.typeDrop ? false : true;
+    }
+  }
+
+  setDrop(target: string, data: string) {
+    if(target == 'type') {
+      this.accountForm.patchValue({ authType: data });
+      this.toggleDrop('type');
+    }
+  }
+
+  editAccount(account: string) {
+    console.log(account);
+    this.modalFunction = 'edit';
+
+    this.caneService.getAccountDetail(account).toPromise()
+    .then((res) => {
+      console.log(res);
+
+      this.accountForm.patchValue({
+        name: res['name'],
+        baseURL: res['baseURL'],
+        requireProxy: res['requireProxy'],
+        authType: res['authType']
+        })
+
+      if(res['authObj']['publicKey']) {
+        this.accountForm.patchValue({ authObj: { publicKey: res['authObj']['publicKey'] }})
+      }
+
+      if(res['authObj']['privateKey']) {
+        this.accountForm.patchValue({ authObj: { privateKey: res['authObj']['privateKey'] }})
+      }
+
+      if(res['authObj']['header']) {
+        this.accountForm.patchValue({ authObj: { header: res['authObj']['header'] }})
+      }
+
+      if(res['authObj']['key']) {
+        this.accountForm.patchValue({ authObj: { key: res['authObj']['key'] }})
+      }
+
+      if(res['authObj']['authBody']) {
+        this.accountForm.patchValue({ authObj: { authBody: res['authObj']['authBody'] }})
+      }
+
+      if(res['authObj']['authBodyMap']) {
+        this.accountForm.patchValue({ authObj: { authBodyMap: res['authObj']['authBodyMap'] }})
+      }
+
+      if(res['authObj']['cookieLifetime']) {
+        this.accountForm.patchValue({ authObj: { cookieLifetime: res['authObj']['cookieLifetime'] }})
+      }
+
+      if(res['authObj']['username']) {
+        this.accountForm.patchValue({ authObj: { username: res['authObj']['username'] }})
+      }
+
+      if(res['authObj']['password']) {
+        this.accountForm.patchValue({ authObj: { password: res['authObj']['password'] }})
+      }
+    });
+
+    this.openModal();
   }
 
   onAuthChange() {
@@ -149,15 +214,31 @@ export class AccountComponent implements OnInit {
       }
     }
 
-    this.caneService.createAccount(data)
-    .subscribe(data  => {
-      console.log("POST Request is successful ", data);
-      this.closeModal();
-      this.refreshAccounts();
-    },
-    error  => {
-      console.log("Error", error);
-    });
+    if(this.modalFunction == 'new') {
+      this.caneService.createAccount(data)
+      .subscribe(data  => {
+        console.log("POST Request is successful ", data);
+        this.closeModal();
+        this.refreshAccounts();
+      },
+      error  => {
+        console.log("Error", error);
+      });
+    } else if(this.modalFunction == 'edit') {
+      let account = data['name'];
+
+      delete data['name'];
+
+      this.caneService.updateAccount(account, data)
+      .subscribe(data  => {
+        console.log("POST Request is successful ", data);
+        this.closeModal();
+        this.refreshAccounts();
+      },
+      error  => {
+        console.log("Error", error);
+      });
+    }
   }
 
   // TODO this does not check for spaces inside

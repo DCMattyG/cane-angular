@@ -27,6 +27,10 @@ export class CaneService {
     return this.http.get(this.baseUrl + '/device/' + account, { headers: this.headers })
   }
 
+  updateAccount(account: string, data: any) {
+    return this.http.patch(this.baseUrl + '/device/' + account, JSON.stringify(data), { headers: this.headers })
+  }
+
   deleteAccount(account: string) {
     return this.http.delete(this.baseUrl + '/device/' + account, { headers: this.headers })
   }
