@@ -101,7 +101,8 @@ export class AccountComponent implements OnInit {
   } 
 
   resetModal() {
-    this.accountForm.reset();   
+    this.accountForm.reset();
+    this.accountForm.patchValue({ authType: 'none' });
   }
 
   closeModal() {
@@ -123,6 +124,8 @@ export class AccountComponent implements OnInit {
 
   setDrop(target: string, data: string) {
     if(target == 'type') {
+      // this.accountForm.controls['authObj'].reset;
+      this.onAuthChange();
       this.accountForm.patchValue({ authType: data });
       this.toggleDrop('type');
     }
