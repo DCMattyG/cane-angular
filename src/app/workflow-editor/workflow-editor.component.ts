@@ -47,6 +47,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
   stateTracker = {
     activeParamDrop: null,
     activeFieldDrop: null,
+    activeVerbDrop: null,
     openEditor: null,
     steps: []
   };
@@ -62,6 +63,14 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
   private settingsDrop = false;
   private accountDrop = false;
   private apiDrop = false;
+  private verbDrop = false;
+
+  private verbs = {
+    "GET" : 31,
+    "POST": 40,
+    "PATCH" : 50,
+    "DELETE" : 55
+  };
 
   private categories = [
     "General",
@@ -129,7 +138,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
   initTracker() {
     this.stateTracker.steps.push({
       currentTab: 'req',
-      requestWindow: 'param',
+      requestWindow: 'param'
     });
   }
 
@@ -421,6 +430,10 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     this.apiDrop = this.apiDrop ? false : true;
   }
 
+  toggleVerbDrop(id: number) {
+    this.stateTracker.activeVerbDrop = this.stateTracker.activeVerbDrop == id ? null : id;
+  }
+
   setRequestWindow(index: number, state: string) {
     this.stateTracker.steps[index].requestWindow = state;
   }
@@ -447,6 +460,11 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     this.toggleApiDrop();
     this.newWorkflowStep.patchValue({ stepAPI: api });
     // this.changeDetector.detectChanges();
+  }
+
+  setVerb(index: number, verb: string) {
+    (<FormArray>this.workflowEditor.controls['steps']).at(index).patchValue({ stepVerb: verb });
+    this.stateTracker.activeVerbDrop = null;
   }
 
   // updateResponse(event: Event, index: number) {
@@ -782,6 +800,7 @@ type Step struct {
           title: '',
           description: '',
           apiCall: '',
+          verb: '',
           deviceAccount: '',
           headers: [],
           variables: [],
@@ -792,6 +811,7 @@ type Step struct {
         newStep.title = step['stepTitle'];
         newStep.deviceAccount = step['stepAccount'];
         newStep.apiCall = step['stepAPI'];
+        newStep.verb = step['stepVerb'];
 
         step['headers'].forEach(
           header => {
@@ -878,9 +898,9 @@ type Step struct {
 
           res['steps'].forEach(
             step => {
-              this.newWorkflowStep.patchValue({ stepTitle: step['title'] })
-              this.newWorkflowStep.patchValue({ stepAccount: step['deviceAccount'] })
-              this.newWorkflowStep.patchValue({ stepAPI: step['apiCall'] })
+              this.newWorkflowStep.patchValue({ stepTitle: step['title'] });
+              this.newWorkflowStep.patchValue({ stepAccount: step['deviceAccount'] });
+              this.newWorkflowStep.patchValue({ stepAPI: step['apiCall'] });
 
               this.addStep().then(
                 () => {
@@ -930,6 +950,7 @@ type Step struct {
                 }
               ).then(
                 () => {
+                  this.setVerb(index, step['verb']);
                   index++;
                 }
               )
@@ -938,6 +959,14 @@ type Step struct {
         }
       }
     )
+  }
+
+  getVerbs() {
+    return Object.keys(this.verbs);
+  }
+
+  verbWidth(verb: string) {
+    return this.verbs[verb];
   }
 
   executeRequest() {

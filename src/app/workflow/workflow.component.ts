@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { MessageService } from '../message/message.service';
 import { CaneService } from '../cane/cane.service';
 import { WorkflowService } from './workflow.service';
+import { FormBuilder, Validators } from '@angular/forms';
 
 interface Workflow {
   description: string;
@@ -19,12 +20,18 @@ interface Workflow {
 })
 export class WorkflowComponent {
   workflows: Workflow[] =[];
+  callWorkflow = false;
+
+  workflowBegin = this.fb.group({
+    editor: [],
+  });
 
   constructor(private http: HttpClient,
     private errorService: MessageService,
     private caneService: CaneService,
     private workflowService: WorkflowService,
-    private messageService: MessageService) {
+    private messageService: MessageService,
+    private fb: FormBuilder) {
     this.getCaneWorkflow();
     this.workflowService.currentOperation = '';
     this.workflowService.targetWorkflow = '';
@@ -80,6 +87,16 @@ export class WorkflowComponent {
       }
     )
   }
+
+  openModal(workflow: string) {
+    console.log("Modal opened with:" + workflow);
+    this.callWorkflow = true;
+  }
+
+  closeModal() {
+    this.callWorkflow = false;
+  }
+
   executeWorkflow(name: string) {
     console.log("Executing Workflow: " + name);
   }

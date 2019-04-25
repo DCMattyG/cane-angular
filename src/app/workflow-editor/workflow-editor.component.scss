@@ -223,7 +223,40 @@ input.ng-dirty.ng-invalid {
   left: 0;
 }
 
+.dropdown-list {
+  display: block !important;
+  text-align: center !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
 #requestEditor {
   width: 100%;
   height: 100%;
+}
+
+.step-verb {
+  background: black;
+  color: white;
+  text-align: center;
+}
+
+.verb-list {
+  min-width: 100px !important;
+  background-color: black !important;
+  color: white !important;
+}
+
+.verb-list::after {
+  background-color: black !important;
+
+}
+
+.verb-drop > a::after {
+  color: white;
+}
+
+.dropdown__menu .verb-item {
+  color: white !important;
+  font-weight: bold;
 }

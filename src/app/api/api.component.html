@@ -26,7 +26,7 @@
             <tr *ngFor="let api of apis">
               <td><a (click)="editApi(api.name, api.apiCall.name)">{{ api.name }}</a></td>
               <td>{{ api.apiCall.name  }}</td>
-              <td style="text-align: center;">{{ api.apiCall.method }}</td>
+              <td style="text-align: center;">{{ api.apiCall.type }}</td>
               <td>{{ api.apiCall.path }}</td>
               <td style="text-align: right">
                 <button class="btn btn--negative btn--icon btn--small"
@@ -53,7 +53,7 @@
         <div class="modal__body">
           <div class="panel">
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-5">
                 <div class="form-group">
                   <div class="form-group__text bottom-line">
                     <input type="text" formControlName="name" class="no-dropdown" [ngClass]="{'disabled': modalFunction == 'edit'}"/>
@@ -61,13 +61,15 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <div class="form-group">
                   <div class="form-group__text bottom-line">
                     <ng-container *ngIf="modalFunction != 'edit'">
                       <label for="input-layout-default">Account</label>
                       <div class="dropdown dropdown--center dropdown--tail" [ngClass]="{ 'active': accountDrop }">
-                        <a (click)="toggleDrop('account')"><input type="text" formControlName="deviceAccount" readonly /></a>
+                        <a (click)="toggleDrop('account')">
+                          <input type="text" formControlName="deviceAccount" style="width: 80% !important" readonly />
+                        </a>
                         <div class="dropdown__menu">
                           <a *ngFor="let account of accounts" (click)="setDrop('account', account)" class="dropdown-list">{{ account }}</a>
                         </div>
@@ -80,29 +82,16 @@
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="row" style="padding-top: 20px;">
-              <div class="col-md-6">
+              <div class="col-md-3">
                 <div class="form-group">
                   <div class="form-group__text bottom-line">
                     <label for="input-layout-default">Type</label>
                     <div class="dropdown dropdown--center dropdown--tail" [ngClass]="{ 'active': typeDrop }">
-                      <a (click)="toggleDrop('type')"><input type="text" formControlName="type" readonly /></a>
+                      <a (click)="toggleDrop('type')">
+                        <input type="text" formControlName="type" style="width: 80% !important" readonly />
+                      </a>
                       <div class="dropdown__menu">
                         <a *ngFor="let typeOption of typeList" (click)="setDrop('type', typeOption)" class="dropdown-list">{{ typeOption }}</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <div class="form-group__text bottom-line">
-                    <label for="input-layout-default">Method</label>
-                    <div class="dropdown dropdown--center dropdown--tail" [ngClass]="{ 'active': methodDrop }">
-                      <a (click)="toggleDrop('method')"><input type="text" formControlName="method" readonly /></a>
-                      <div class="dropdown__menu">
-                        <a *ngFor="let methodOption of methodList" (click)="setDrop('method', methodOption)" class="dropdown-list">{{ methodOption }}</a>
                       </div>
                     </div>
                   </div>

@@ -41,7 +41,17 @@
                     <div class="text-info"><strong>{{(i+1)}}.{{workflowEditor.controls.steps.controls[i].controls.stepTitle.value}}</strong></div>
                     <div>
                       <span class="http-verb">
-                        <strong>{{workflowEditor.controls.steps.controls[i].controls.stepVerb.value}}</strong>
+                        <!-- <strong>{{workflowEditor.controls.steps.controls[i].controls.stepVerb.value}}</strong> -->
+                        <div class="dropdown dropdown--center dropdown--tail verb-drop" [ngClass]="{ 'active': stateTracker.activeVerbDrop === i }">
+                          <a (click)="toggleVerbDrop(i)">
+                            <strong>
+                              <input type="text" formControlName="stepVerb" class="step-verb" [ngStyle]="{'width.px': verbWidth(workflowEditor.controls.steps.controls[i].controls.stepVerb.value)}" readonly/>
+                            </strong>
+                          </a>
+                          <div class="dropdown__menu verb-list" style="width: 60px;">
+                            <a *ngFor="let verb of getVerbs()" (click)="setVerb(i, verb)" class="dropdown-list verb-item">{{ verb }}</a>
+                          </div>
+                        </div>
                       </span>
                       <span> {{workflowEditor.controls.steps.controls[i].controls.stepAPIDetail.value}}</span>
                     </div>
@@ -291,7 +301,7 @@
                     <div class="dropdown dropdown--center dropdown--tail" [ngClass]="{ 'active': accountDrop }">
                       <a (click)="toggleAccountDrop()"><input type="text" formControlName="stepAccount" style="background: none; border: none; box-shadow: none; width: 90%; padding-left: 25px; text-align: center;" readonly /></a>
                       <div class="dropdown__menu">
-                        <a *ngFor="let account of accountList" (click)="setAccount(account)" style="display: block; text-align: center; padding: 0; border: none;">{{ account }}</a>
+                        <a *ngFor="let account of accountList" (click)="setAccount(account)" class="dropdown-list">{{ account }}</a>
                       </div>
                     </div>
                   </div>
@@ -306,7 +316,7 @@
                     <div class="dropdown dropdown--center dropdown--tail" [ngClass]="{ 'active': apiDrop }">
                       <a (click)="toggleApiDrop()"><input type="text" formControlName="stepAPI" style="background: none; border: none; box-shadow: none; width: 90%; padding-left: 25px; text-align: center;" readonly /></a>
                       <div class="dropdown__menu">
-                        <a *ngFor="let api of apiList" (click)="setApi(api)" style="display: block; text-align: center; padding: 0; border: none;">{{ api }}</a>
+                        <a *ngFor="let api of apiList" (click)="setApi(api)" class="dropdown-list">{{ api }}</a>
                       </div>
                     </div>
                   </div>
@@ -348,7 +358,7 @@
                   <div class="dropdown dropdown--center dropdown--tail" [ngClass]="{ 'active': settingsDrop }">
                     <a (click)="toggleSettingsDrop()"><input type="text" formControlName="workflowCategory" style="background: none; border: none; box-shadow: none; width: 90%; padding-left: 25px; text-align: center;" readonly /></a>
                     <div class="dropdown__menu">
-                      <a *ngFor="let category of categories" (click)="setCategory(category)" style="display: block; text-align: center; padding: 0; border: none;">{{ category }}</a>
+                      <a *ngFor="let category of categories" (click)="setCategory(category)" class="dropdown-list">{{ category }}</a>
                     </div>
                   </div>
                 </div>

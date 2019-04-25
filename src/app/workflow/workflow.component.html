@@ -22,7 +22,7 @@
                 <td>{{ workflow.category | titlecase }}</td>
                 <td>{{ workflow.description }}</td>
                 <td>
-                  <button (click)="executeWorkflow(workflow.name)" class="btn btn--small btn--icon btn--success">
+                  <button (click)="openModal(workflow.name)" class="btn btn--small btn--icon btn--success">
                     <span class="icon icon-play"></span>
                   </button>
                 </td>
@@ -39,3 +39,37 @@
     </div>
   </div>
 </div>
+
+<div class="modal modal--small" id="modal-small" *ngIf="callWorkflow == true">
+    <form [formGroup]="workflowBegin" (ngSubmit)="onSubmit()">
+      <div class="modal__dialog">
+        <div class="modal__content">
+          <a class="modal__close" (click)="closeModal()"><span class="icon-close"></span></a>
+          <div class="modal__header">
+            <h1 class="modal__title">Start Workflow</h1>
+          </div>
+          <div class="modal__body">
+            <div class="panel">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <div class="form-group__text" style="align-items: center;">
+                      <label for="input-workflow-body">Initial Data:</label>
+                      <div id="input-workflow-body" style="width: 100%; margin-top: 10px; border: 1px solid #dfdfdf;">
+                        <app-code-editor formControlName="editor"></app-code-editor>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal__footer">
+            <button type="submit" [disabled]="!workflowBegin.valid" class="btn btn--success">Start</button>
+            <button type="button" class="btn btn-negative" (click)="closeModal()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  

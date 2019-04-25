@@ -6,7 +6,6 @@ import { CaneService } from '../cane/cane.service';
 
 interface ApiDetail {
   name: string;
-  method: string;
   type: string;
   path: string;
 }
@@ -40,19 +39,10 @@ export class ApiComponent implements OnInit{
     "XML"
   ];
 
-  methodList : string[] = [
-    "GET",
-    "POST",
-    "PUT",
-    "PATCH",
-    "DELETE"
-  ];
-
   newApiForm = this.fb.group({
     name: ['', [Validators.required, this.noWhitespaceValidator]],
     deviceAccount: ['', Validators.required],
     type: ['', Validators.required],
-    method: ['', Validators.required],
     path: ['', [Validators.required, this.noWhitespaceValidator]]
   });
 
@@ -160,10 +150,6 @@ export class ApiComponent implements OnInit{
     if(target == 'type') {
       this.typeDrop = this.typeDrop ? false : true;
     }
-
-    if(target == 'method') {
-      this.methodDrop = this.methodDrop ? false : true;
-    }
   }
 
   setDrop(target: string, data: string) {
@@ -175,11 +161,6 @@ export class ApiComponent implements OnInit{
     if(target == 'type') {
       this.newApiForm.patchValue({ type: data });
       this.toggleDrop('type');
-    }
-
-    if(target == 'method') {
-      this.newApiForm.patchValue({ method: data });
-      this.toggleDrop('method');
     }
   }
 
@@ -201,7 +182,6 @@ export class ApiComponent implements OnInit{
         name: res['name'],
         deviceAccount: res['deviceAccount'],
         type: res['type'].toUpperCase(),
-        method: res['method'],
         path: res['path']
       });
     });
