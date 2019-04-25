@@ -329,7 +329,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     var newAPI = this.newWorkflowStep.value.stepAPI
     var newAccountDetail;
     var newAPIDetail;
-    var newVerb;
+    var newVerb = 'GET';
 
     return new Promise((resolve) => {
       this.caneService.getAccountDetail(newAccount).toPromise()
@@ -344,7 +344,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
           .then(
             res=> {
               newAPIDetail = res['path'];
-              newVerb = res['method']
+              // newVerb = res['method']
             }
           )
           .then(
