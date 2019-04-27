@@ -1,3 +1,15 @@
+.modal__dialog {
+  // display: inline-block;
+  display: table;
+  position: fixed;
+  margin: auto;
+  // height: 550px;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+
 td {
   word-wrap:break-word;
   word-break:break-all;
