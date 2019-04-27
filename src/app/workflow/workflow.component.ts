@@ -196,6 +196,8 @@ export class WorkflowComponent {
     },error => {
         this.messageService.newMessage('error', 'Error', `Error executing workflow "${workflow}"!`);
     });
+
+    this.closeModal();
   }
 
   executeWorkflow(name: string) {

@@ -211,11 +211,49 @@ export class AccountComponent implements OnInit {
     console.log(data);
 
     // remove all empty values
-    for (let prop in data.authObj) {
-      if (!data.authObj[prop]) {
-        delete data.authObj[prop];
-      }
+    // for (let prop in data.authObj) {
+    //   if (!data.authObj[prop]) {
+    //     delete data.authObj[prop];
+    //   }
+    // }
+
+    switch (data['authType']) {
+      case 'none':
+        console.log("NONE Auth Detected...")
+        for (let prop in data.authObj) {
+          delete data.authObj[prop];
+        }
+        break;
+      case 'basic':
+        console.log("BASIC h Detected...")
+        for (let prop in data.authObj) {
+          if (prop != 'username' && prop != 'password') {
+            delete data.authObj[prop];
+          }
+        }
+        break;
+      case 'apikey':
+        console.log("APIKEY Auth Detected...")
+        for (let prop in data.authObj) {
+          if (prop != 'header' && prop != 'key') {
+            delete data.authObj[prop];
+          }
+        }
+        break;
+      case 'rfc3447':
+        console.log("RFC3447 Auth Detected...")
+        for (let prop in data.authObj) {
+          if (prop != 'publicKey' && prop != 'privateKey') {
+            delete data.authObj[prop];
+          }
+        }
+        break;
+      default:
+        console.log("Unknown Auth Type!");
+        break;
     }
+
+    console.log(data);
 
     if(this.modalFunction == 'new') {
       this.caneService.createAccount(data)
