@@ -7,11 +7,10 @@ import * as dot from 'dot-object';
 import { CaneService } from '../cane/cane.service';
 import { MessageService } from '../message/message.service';
 import { WorkflowService } from '../workflow/workflow.service';
-import { resolve } from 'q';
 import { Router } from '@angular/router';
 
 const VALID_NAME = /^(\$*[a-zA-Z0-9]+)(\.(([a-zA-Z0-9]+)|(\d+\.[a-zA-Z0-9]+)))*(\.\d+)?$/;
-const VALID_QUERY = /^(([$]*[\w-]+(=[\w-' ]+))?(&[$]*[\w-]+(=[\w-' ]+))*)?$/;
+const VALID_QUERY = /^(([$.]?[\w-]+(=[\w-' ]+))?(&[$.]?[\w-]+(=[\w-'. ]+))*)?$/;
 
 @Component({
   selector: 'app-workflow-editor',
