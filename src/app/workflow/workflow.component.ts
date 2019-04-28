@@ -99,6 +99,7 @@ export class WorkflowComponent {
   async generateZero(workflow: string) {
     var prevStep: object;
     var zeroBody: object = {};
+    var varPool: Array<string> = [];
 
     var result = await this.caneService.getWorkflowDetail(workflow).toPromise()
 
@@ -115,7 +116,10 @@ export class WorkflowComponent {
         pathVars.forEach((val: string) => {
           val = val.replace('{{', '');
           val = val.replace('}}', '');
-          zeroBody[val] = '<string>';
+
+          if(!varPool.includes(val)){
+            zeroBody[val] = '<string>';
+          }
         });
       }
 
@@ -127,7 +131,10 @@ export class WorkflowComponent {
           bodyVars.forEach((val: string) => {
             val = val.replace('{{', '');
             val = val.replace('}}', '');
-            zeroBody[val] = '<string>';
+
+            if(!varPool.includes(val)){
+              zeroBody[val] = '<string>';
+            }
           })
         }
       });
@@ -140,7 +147,10 @@ export class WorkflowComponent {
           queryVars.forEach((val: string) => {
             val = val.replace('{{', '');
             val = val.replace('}}', '');
-            zeroBody[val] = '<string>';
+
+            if(!varPool.includes(val)){
+              zeroBody[val] = '<string>';
+            }
           })
         }
       });
@@ -150,20 +160,30 @@ export class WorkflowComponent {
         if(this.isVariable(val)) {
           val = val.replace('{{', '');
           val = val.replace('}}', '');
-          zeroBody[val] = '<string>';
+
+          if(!varPool.includes(val)){
+            zeroBody[val] = '<string>';
+          }
         }
       });
 
-      if(prevStep) {
-        prevStep['variables'].forEach((variable: object) => {
-          var val:string = Object.keys(variable)[0];
-          if(zeroBody[val]) {
-            delete zeroBody[val];
-          }
-        });
-      }
+      step['variables'].forEach((variable: object) => {
+        var val:string = Object.keys(variable)[0];
+          if(!varPool.includes(val))
+            console.log("Pushing: " + val);
+            varPool.push(val)
+      });
 
-      prevStep = step;
+      // if(prevStep) {
+      //   prevStep['variables'].forEach((variable: object) => {
+      //     var val:string = Object.keys(variable)[0];
+      //     if(zeroBody[val]) {
+      //       delete zeroBody[val];
+      //     }
+      //   });
+      // }
+
+      // prevStep = step;
     }
 
     return zeroBody;
