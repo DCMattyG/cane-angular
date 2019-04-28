@@ -51,8 +51,12 @@
               </tr>
               <tr>
                 <th>Status</th>
-                <td>{{ statusMap[stepResult.value.status] }}</td>
+                <td>{{ statusMap[stepResult.value.status] }} ({{ stepResult.value.resStatus }})</td>
               </tr>
+              <tr>
+                  <th>Path</th>
+                  <td>{{ stepResult.value.api.path }}</td>
+                </tr>
               <tr>
                 <th style='vertical-align: top;'>Request</th>
                 <td>

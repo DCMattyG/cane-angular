@@ -51,6 +51,8 @@ export class JobdetailComponent implements OnInit {
           results: res['workflowResults'],
         };
 
+        console.log(res['workflowResults']);
+
 
         /* reparse the request/response bodies 
         so that they can be properly displayed */
