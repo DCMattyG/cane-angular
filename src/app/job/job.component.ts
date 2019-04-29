@@ -29,11 +29,11 @@ export class JobComponent {
   getJobs() {
     this.caneService.getClaim().subscribe(
       res => {
-        console.log(res);
-
-        res['claims'].forEach(element => {
-          this.getClaimDetails(element);
-      });
+        if(res['claims']) {
+          res['claims'].forEach(element => {
+            this.getClaimDetails(element);
+        });
+      }
     });
   }
 

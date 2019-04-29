@@ -9,7 +9,7 @@ import { MessageService } from '../message/message.service';
 import { WorkflowService } from '../workflow/workflow.service';
 import { Router } from '@angular/router';
 
-const VALID_NAME = /^(\$*[a-zA-Z0-9]+)(\.(([a-zA-Z0-9]+)|(\d+\.[a-zA-Z0-9]+)))*(\.\d+)?$/;
+const VALID_NAME = /^(\$*[a-zA-Z0-9:-]+)(\.(([a-zA-Z0-9:-]+)|(\d+\.[a-zA-Z0-9:-]+)))*(\.\d+)?$/;
 const VALID_QUERY = /^(([$.]?[\w-]+(=[\w-' ]+))?(&[$.]?[\w-]+(=[\w-'. ]+))*)?$/;
 
 @Component({
@@ -54,15 +54,14 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
   public workflowEditor: FormGroup;
   public newWorkflowStep: FormGroup;
   public editWorkflowDetails: FormGroup;
-  private newEditor = false;
-  private editDetails = false;
-  private accountList;
-  private apiList;
+  public newEditor = false;
+  public editDetails = false;
+  public accountList;
+  public apiList;
 
-  private settingsDrop = false;
-  private accountDrop = false;
-  private apiDrop = false;
-  private verbDrop = false;
+  public settingsDrop = false;
+  public accountDrop = false;
+  public apiDrop = false;
 
   private verbs = {
     "GET" : 31,
@@ -71,7 +70,7 @@ export class WorkflowEditorComponent implements AfterViewInit, OnInit {
     "DELETE" : 55
   };
 
-  private categories = [
+  public categories = [
     "General",
     "Compute",
     "Network",

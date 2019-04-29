@@ -83,7 +83,7 @@ export class AccountComponent implements OnInit {
     this.caneService.getAccount().toPromise() 
     .then( 
       (res: any[]) => { 
-        if(res && res['devices'].length > 0) { 
+        if(res['devices'] && res['devices'].length > 0) {
           res['devices'].forEach( 
             account => { 
               this.caneService.getAccountDetail(account).toPromise() 

@@ -42,9 +42,11 @@ export class WorkflowComponent {
     
     this.caneService.getWorkflow()
     .subscribe(res => {
-      res['workflows'].forEach(element => {
-        this.getCaneWorkflowDetail(element);
-      });
+      if(res['workflows']) {
+        res['workflows'].forEach(element => {
+          this.getCaneWorkflowDetail(element);
+        });
+      }
     });
   }
 
@@ -97,7 +99,7 @@ export class WorkflowComponent {
   }
 
   async generateZero(workflow: string) {
-    var prevStep: object;
+    // var prevStep: object;
     var zeroBody: object = {};
     var varPool: Array<string> = [];
 
@@ -168,10 +170,9 @@ export class WorkflowComponent {
       });
 
       step['variables'].forEach((variable: object) => {
-        var val:string = Object.keys(variable)[0];
-          if(!varPool.includes(val))
-            console.log("Pushing: " + val);
-            varPool.push(val)
+        var key:string = Object.keys(variable)[0];
+          if(!varPool.includes(key))
+            varPool.push(key)
       });
 
       // if(prevStep) {

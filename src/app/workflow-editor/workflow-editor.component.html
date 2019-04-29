@@ -4,8 +4,8 @@
       <div style="margin-right: auto">
         <span class="editor-title">Workflow: "{{ workflowEditor.controls['workflowName'].value }}" <span
             class="icon-pencil icon-small text--primary" (click)="openModal('edit')"></span></span>
-        <input type="hidden" formControlName="workflowName" [value]="workflowName">
-        <input type="hidden" formControlName="workflowDescription" [value]="workflowDescription">
+        <input type="hidden" formControlName="workflowName">
+        <input type="hidden" formControlName="workflowDescription">
       </div>
       <div style="margin-left: auto">
         <button type="button" class="btn btn--icon btn--small btn--secondary" [routerLink]="['/workflow']">
@@ -26,7 +26,7 @@
     </div>
     <div class="editor-container">
       <ng-container formArrayName="steps">
-        <ng-container *ngFor="let step of workflowEditor.controls.steps.controls; let i=index">
+        <ng-container *ngFor="let step of workflowEditor.controls.steps.controls; let i=index"> <!-- workflowEditor.get('steps') -->
           <ng-container [formGroupName]="i">
             <div class="container editor-outer">
               <div class="container editor-inner">
