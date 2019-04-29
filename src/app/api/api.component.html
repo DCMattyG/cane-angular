@@ -56,7 +56,7 @@
               <div class="col-md-5">
                 <div class="form-group">
                   <div class="form-group__text bottom-line">
-                    <input type="text" formControlName="name" class="no-dropdown" [ngClass]="{'disabled': modalFunction == 'edit'}"/>
+                    <input type="text" spellcheck="false" formControlName="name" class="no-dropdown" [ngClass]="{'disabled': modalFunction == 'edit'}"/>
                     <label for="input-layout-default">Name</label>
                   </div>
                 </div>
@@ -68,7 +68,7 @@
                       <label for="input-layout-default">Account</label>
                       <div class="dropdown dropdown--center dropdown--tail" [ngClass]="{ 'active': accountDrop }">
                         <a (click)="toggleDrop('account')">
-                          <input type="text" formControlName="deviceAccount" style="width: 80% !important" readonly />
+                          <input type="text" spellcheck="false" formControlName="deviceAccount" style="width: 80% !important" readonly />
                         </a>
                         <div class="dropdown__menu">
                           <a *ngFor="let account of accounts" (click)="setDrop('account', account)" class="dropdown-list">{{ account }}</a>
@@ -77,7 +77,7 @@
                     </ng-container>
                     <ng-container *ngIf="modalFunction == 'edit'">
                       <label for="input-layout-default">Account</label>
-                      <input type="text" formControlName="deviceAccount" class="no-dropdown" [ngClass]="{'disabled': modalFunction == 'edit'}" />
+                      <input type="text" spellcheck="false" formControlName="deviceAccount" class="no-dropdown" [ngClass]="{'disabled': modalFunction == 'edit'}" />
                     </ng-container>
                   </div>
                 </div>
@@ -88,7 +88,7 @@
                     <label for="input-layout-default">Type</label>
                     <div class="dropdown dropdown--center dropdown--tail" [ngClass]="{ 'active': typeDrop }">
                       <a (click)="toggleDrop('type')">
-                        <input type="text" formControlName="type" style="width: 80% !important" readonly />
+                        <input type="text" spellcheck="false" formControlName="type" style="width: 80% !important" readonly />
                       </a>
                       <div class="dropdown__menu">
                         <a *ngFor="let typeOption of typeList" (click)="setDrop('type', typeOption)" class="dropdown-list">{{ typeOption }}</a>
@@ -102,7 +102,7 @@
               <div class="col-md-12">
                 <div class="form-group">
                   <div class="form-group__text bottom-line">
-                    <input type="text" formControlName="path" class="no-dropdown" />
+                    <input type="text" spellcheck="false" formControlName="path" class="no-dropdown" />
                     <label for="input-uri">API Endpoint</label>
                   </div>
                 </div>
