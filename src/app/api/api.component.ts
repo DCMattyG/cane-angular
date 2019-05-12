@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { environment } from 'src/environments/environment.prod';
+import { environment } from 'src/environments/environment';
 import { Validators, FormBuilder, FormControl } from '@angular/forms';
 import { CaneService } from '../cane/cane.service';
 

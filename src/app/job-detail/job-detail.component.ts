@@ -39,8 +39,6 @@ export class JobdetailComponent implements OnInit {
   getClaimDetails(claimId: string) {
     this.caneService.getClaimDetail(claimId).subscribe(
       res => {
-        //console.log(res);
-
         let thisClaim: Job;
 
         thisClaim = {
@@ -51,7 +49,7 @@ export class JobdetailComponent implements OnInit {
           results: res['workflowResults'],
         };
 
-        console.log(res['workflowResults']);
+        // console.log(res['workflowResults']);
 
 
         /* reparse the request/response bodies 
@@ -81,7 +79,7 @@ export class JobdetailComponent implements OnInit {
       thisClaim.results = tempArray;
       this.job = thisClaim;
 
-      console.log(this.job);
+      // console.log(this.job);
     });
   }
 }

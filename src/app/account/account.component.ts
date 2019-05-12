@@ -112,7 +112,6 @@ export class AccountComponent implements OnInit {
   }
 
   openModal() {
-    console.log("Opening Modal...")
     this.newAccount = true;
   }
 

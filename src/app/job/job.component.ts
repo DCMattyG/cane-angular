@@ -40,8 +40,6 @@ export class JobComponent {
   getClaimDetails(claimId) {
     this.caneService.getClaimDetail(claimId).subscribe(
       res => {
-        console.log(res);
-
         let thisClaim: Job;
         
         thisClaim = {
